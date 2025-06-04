@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Threading.Channels;
+using Application.Interfaces;
 using Domain.Entities;
 using Domain.Entities.Auction;
 

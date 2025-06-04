@@ -1,7 +1,6 @@
-using Domain.Entities;
 using Domain.Entities.Auction;
 
-namespace Application.Services;
+namespace Application.Interfaces;
 
 public interface IAuctionMonitor
 {
