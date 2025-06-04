@@ -3,6 +3,8 @@ using Application.Services;
 using Domain.Entities;
 using Domain.Entities.Vehicles;
 using Infra.Repositories;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
 
 namespace Car.Auction.Management.System;
 
@@ -19,8 +21,10 @@ public class AuctionServiceTests
     {
         _vehicleRepo = new InMemoryVehicleRepository();
         _auctionRepo = new InMemoryAuctionRepository();
-        _service = new AuctionService(_vehicleRepo, _auctionRepo, Channel.CreateUnbounded<Domain.Entities.Auction>().Writer);
-        _vehicleService = new VehicleService(_vehicleRepo, _auctionRepo);
+        var logger = Substitute.For<ILogger<AuctionService>>();
+        var loggerVehicle = Substitute.For<ILogger<VehicleService>>();
+        _service = new AuctionService(_vehicleRepo, _auctionRepo, Channel.CreateUnbounded<Domain.Entities.Auction.Auction>().Writer, logger);
+        _vehicleService = new VehicleService(_vehicleRepo, _auctionRepo, loggerVehicle);
     }
 
     [Test]
@@ -61,7 +65,7 @@ public class AuctionServiceTests
 
         var results = await _vehicleService.SearchVehicles(type: "Hatchback", manufacturer: "Honda");
         Assert.That(1, Is.EqualTo(results.Count()));
-        Assert.That("Fit", Is.EqualTo(results.First().Model));
+        Assert.That("Fit", Is.EqualTo(results.First().Car.Model));
     }
 
     [Test]

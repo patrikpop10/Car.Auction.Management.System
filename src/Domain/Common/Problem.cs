@@ -1,6 +1,6 @@
 ﻿using Domain.Entities.Vehicles;
 
-namespace Application.Common;
+namespace Domain.Common;
 
 public record Problem
 {
@@ -69,8 +69,6 @@ public record Problem
             ErrorMessage = "The bid amount must be greater than the current highest bid."
         };
     }
-    
-    
     
     public static Problem InternalServerError()
     {

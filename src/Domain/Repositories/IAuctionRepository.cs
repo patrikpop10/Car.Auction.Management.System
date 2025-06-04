@@ -1,5 +1,5 @@
-using Application.Common;
 using Domain.Entities;
+using Domain.Entities.Auction;
 using Domain.Entities.Vehicles;
 
 namespace Domain.Repositories;

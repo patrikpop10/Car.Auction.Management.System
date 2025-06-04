@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Entities.Auction;
 
 namespace Application.Services;
 

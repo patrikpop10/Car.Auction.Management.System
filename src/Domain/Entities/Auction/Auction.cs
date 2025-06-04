@@ -1,12 +1,11 @@
-using Application.Common;
+using Domain.Common;
 using Domain.Entities.Vehicles;
 
-namespace Domain.Entities;
+namespace Domain.Entities.Auction;
 
 public class Auction
 {
     public VehicleId VehicleId { get; }
-    
     public bool IsActive { get; private set; }
     public List<Bid> Bids { get; }
     public DateTime StartedAt { get; }
@@ -41,9 +40,8 @@ public class Auction
         }
         IsActive = false;
         ClosedAt = DateTime.UtcNow;
-        return Result<AuctionClosed>.Success(new AuctionClosed(VehicleId, Bids.LastOrDefault()?.Bidder ?? "", Bids.LastOrDefault()?.Value ?? Money.None()));
+        return Result<AuctionClosed>.Success(new AuctionClosed(VehicleId.Id, Bids.LastOrDefault()?.Bidder ?? "", Bids.LastOrDefault()?.Value ?? Money.None()));
     }
 
     public Money CurrentHighestBid => Bids.Count > 0 ? Bids[^1].Value : Money.None();
 }
-public sealed record AuctionClosed(VehicleId Vehicle, string Winner, Money WinningBid);

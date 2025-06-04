@@ -1,5 +1,7 @@
-﻿using System.Threading.Channels;
+﻿using System.Runtime.CompilerServices;
+using System.Threading.Channels;
 using Domain.Entities;
+using Domain.Entities.Auction;
 
 namespace Application.Services;
 
@@ -12,12 +14,10 @@ public class AuctionMonitor : IAuctionMonitor
         _channelReader = channelReader;
     }
 
-    public async IAsyncEnumerable<Auction> GetActiveAuctionsAsync(CancellationToken cancellationToken)
+    public async IAsyncEnumerable<Auction> GetActiveAuctionsAsync([EnumeratorCancellation] CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested && await _channelReader.WaitToReadAsync(cancellationToken))
         {
-            // Wait for the next auction to be available
-            
             yield return await _channelReader.ReadAsync(cancellationToken);
         }
         

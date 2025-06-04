@@ -1,7 +1,10 @@
 ﻿using System.Net.ServerSentEvents;
+using Application.DTOs.Requests;
 using Application.Extensions;
+using Application.Interfaces;
 using Application.Services;
 using Domain.Entities;
+using Domain.Entities.Auction;
 using Domain.Entities.Vehicles;
 
 namespace Api.Endpoints;
@@ -31,7 +34,7 @@ public static class AuctionsEndpoints
         });
         
         
-        group.MapGet("/active/{vehicleId:guid}", async (IAuctionMonitor monitor, Guid vehicleId, CancellationToken cancellationToken) =>
+        group.MapGet("/active/{vehicleId:guid}", (IAuctionMonitor monitor, Guid vehicleId, CancellationToken cancellationToken) =>
         {
             async IAsyncEnumerable<SseItem<Auction>> GetActiveAuctions()
             {

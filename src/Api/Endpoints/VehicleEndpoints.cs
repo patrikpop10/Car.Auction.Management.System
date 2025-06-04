@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using Application.DTOs.Requests;
 using Application.Extensions;
 using Application.Services;
 using Domain.Entities.Vehicles;
@@ -11,14 +12,14 @@ public static class VehiclesEndpoints
     {
         var group = application.MapGroup("/vehicles").WithTags("Vehicles");
         
-        group.MapPost("/", async (IVehicleService service, VehicleDto dto) =>
+        group.MapPost("/", async (IVehicleService service, VehicleRequest dto) =>
         {
-            Vehicle vehicle = dto.Type switch
+            Vehicle vehicle = dto.Car.Type switch
             {
-                "Hatchback" => new Hatchback(new VehicleId(dto.Id), dto.Manufacturer, dto.Model, dto.Year, dto.StartingBid.ToDomain(), dto.NumberOfDoors ?? 5),
-                "Sedan"     => new Sedan(new VehicleId(dto.Id), dto.Manufacturer, dto.Model, dto.Year, dto.StartingBid.ToDomain(), dto.NumberOfDoors ?? 4),
-                "SUV"       => new SUV(new VehicleId(dto.Id), dto.Manufacturer, dto.Model, dto.Year, dto.StartingBid.ToDomain(), dto.NumberOfSeats ?? 5),
-                "Truck"     => new Truck(new VehicleId(dto.Id), dto.Manufacturer, dto.Model, dto.Year, dto.StartingBid.ToDomain(), dto.LoadCapacity ?? 1.0),
+                "Hatchback" => new Hatchback(new VehicleId(dto.Id), dto.Car.Manufacturer, dto.Car.Model, dto.Car.Year, dto.StartingBid.ToDomain(), dto.Car.NumberOfDoors ?? 5),
+                "Sedan"     => new Sedan(new VehicleId(dto.Id), dto.Car.Manufacturer, dto.Car.Model, dto.Car.Year, dto.StartingBid.ToDomain(), dto.Car.NumberOfDoors ?? 4),
+                "SUV"       => new SUV(new VehicleId(dto.Id), dto.Car.Manufacturer, dto.Car.Model, dto.Car.Year, dto.StartingBid.ToDomain(), dto.Car.NumberOfSeats ?? 5),
+                "Truck"     => new Truck(new VehicleId(dto.Id), dto.Car.Manufacturer, dto.Car.Model, dto.Car.Year, dto.StartingBid.ToDomain(), dto.Car.LoadCapacity ?? 1.0),
                 _           => throw new ArgumentException("Unknown vehicle type")
             };
 
