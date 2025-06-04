@@ -1,0 +1,15 @@
+﻿namespace Domain.Entities;
+
+public sealed class Bid
+{
+    public string Bidder { get; }
+    public Money Value { get; }
+    public DateTime PlacedAt { get; }
+
+    public Bid(string bidder, Money value)
+    {
+        Bidder = bidder;
+        Value = value;
+        PlacedAt = DateTime.UtcNow;
+    }
+}

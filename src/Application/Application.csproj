@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Infra\Infra.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.Http.Abstractions">
+      <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\10.0.0-preview.4.25258.110\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNetCore.Http.Results">
+      <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\10.0.0-preview.4.25258.110\Microsoft.AspNetCore.Http.Results.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
