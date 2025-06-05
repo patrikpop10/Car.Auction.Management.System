@@ -89,4 +89,14 @@ public record Problem
             ErrorMessage = $"No auction found for the vehicle with ID {vehicleId.Id}."
         };
     }
+
+    public static Problem VehicleIdMismatch(VehicleId vehicleId, VehicleId vehicleId1)
+    {
+        return new Problem
+        {
+            Status = 400,
+            Title = "VehicleIdMismatch",
+            ErrorMessage = $"The provided vehicle ID {vehicleId1.Id} does not match the auction's vehicle ID {vehicleId.Id}."
+        };
+    }
 }

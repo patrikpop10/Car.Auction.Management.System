@@ -4,6 +4,7 @@ using Domain;
 using Domain.Entities;
 using Domain.Entities.Auction;
 using Domain.Entities.Vehicles;
+using Domain.Events;
 
 namespace Application.Extensions;
 

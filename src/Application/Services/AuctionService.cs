@@ -1,8 +1,9 @@
 using System.Threading.Channels;
+using Application.DTOs;
+using Application.DTOs.Requests;
 using Application.DTOs.Responses;
 using Application.Extensions;
 using Application.Interfaces;
-using Domain;
 using Domain.Common;
 using Domain.Entities;
 using Domain.Entities.Auction;
@@ -47,47 +48,62 @@ public class AuctionService : IAuctionService
         return Result<StartAuctionResponse>.Success(auction.ToStartAuctionResponse(vehicle!));
     }
 
-    public async Task<Result<AuctionClosed>> CloseAuction(VehicleId vehicleId)
+    public async Task<Result<AuctionClosedResponse>> CloseAuction(VehicleId vehicleId)
     {
         var auction = await _auctionRepo.GetActiveByVehicleId(vehicleId);
         if (auction is null)
-            return LogAndReturnFailure<AuctionClosed>("Attempted to close an auction for a vehicle without an active auction", Problem.AuctionNotActive(vehicleId), vehicleId);
+            return LogAndReturnFailure<AuctionClosedResponse>("Attempted to close an auction for a vehicle without an active auction", Problem.AuctionNotActive(vehicleId), vehicleId);
 
         _logger.LogInformation("Closing auction for vehicle: {VehicleId}", vehicleId);
-        var closed = await _auctionRepo.CloseAuction(auction);
-        return closed ? auction.Close() : Result<AuctionClosed>.Failure(Problem.AuctionNotFound(vehicleId));
+        var auctionClosed = CloseAuction(auction);
+        return auctionClosed;
+
     }
 
-    public async Task<Result<BidResult>> PlaceBid(VehicleId vehicleId, string bidder, Money money)
+    private Result<AuctionClosedResponse> CloseAuction(Auction auction)
     {
-        var auction = await _auctionRepo.GetActiveByVehicleId(vehicleId);
-        var vehicle = await _vehicleRepo.GetById(vehicleId);
+        if (!auction.IsActive)
+            return Result<AuctionClosedResponse>.Failure(Problem.AuctionNotActive(auction.VehicleId));
+
+        var closedAuction =  auction.Close();
+        if (!closedAuction.IsSuccess)
+            return Result<AuctionClosedResponse>.Failure(closedAuction.Problem!);
+
+        _logger.LogInformation("Auction closed for vehicle {VehicleId} with winner {Winner} and bid {WinningBid}", auction.VehicleId, closedAuction.Value!.Winner, closedAuction.Value.WinningBid);
+
+        return Result<AuctionClosedResponse>.Success(new AuctionClosedResponse(
+            auction.VehicleId.Id,
+            closedAuction.Value.Winner,
+            closedAuction.Value.WinningBid.ToDto()));
+    }
+
+    public async Task<Result<BidResponse>> PlaceBid(BidDto bidDto)
+    {
+        var auction = await _auctionRepo.GetActiveByVehicleId(bidDto.Id);
+        var vehicle = await _vehicleRepo.GetById(bidDto.Id);
 
         if (!VehicleExists(vehicle))
-            return LogAndReturnFailure<BidResult>("Attempted to place a bid on a non-existent vehicle", Problem.VehicleNotFound(vehicleId), vehicleId);
+            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a non-existent vehicle", Problem.VehicleNotFound(bidDto.Id), bidDto.Id);
 
         if (auction is null)
-            return LogAndReturnFailure<BidResult>("Attempted to place a bid on a vehicle without an active auction", Problem.AuctionNotActive(vehicleId), vehicleId);
-
-        if (!BidIsValid(money, auction, vehicle!))
-            return LogAndReturnFailure<BidResult>("Invalid bid attempt", Problem.InvalidBidAmount(), vehicleId, bidder, money);
-
-        _logger.LogInformation("Placing bid for vehicle {VehicleId} by {Bidder}: {Money}", vehicleId, bidder, money);
+            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a vehicle without an active auction", Problem.AuctionNotActive(bidDto.Id), bidDto.Id);
         
-        var bid = new Bid(bidder, money);
-        auction.PlaceBid(bid);
+
+        _logger.LogInformation("Placing bid for vehicle {VehicleId} by {Bidder}: {Money}", bidDto.Id, bidDto.Bidder, bidDto.Amount);
+
+        var bid = bidDto.ToDomain();
+        var bidResult = auction.PlaceBid(bid, vehicle!);
+        if (!bidResult.IsSuccess)
+        {
+            return LogAndReturnFailure<BidResponse>("Failed to place bid", bidResult.Problem!, bidDto.Id, bidDto.Bidder, bidDto.Amount.ToDomain());
+        }
 
         await _auctionChannelWriter.WriteAsync(auction);
-        return Result<BidResult>.Success(new BidResult(vehicle!.ToDto(), bid.Bidder, bid.Value.ToDto()));
+        return Result<BidResponse>.Success(new BidResponse(vehicle!.ToDto(), bid.Bidder, bid.Value.ToDto()));
     }
 
     private static bool VehicleExists(Vehicle? vehicle) => vehicle is not null;
-
-    private static bool BidIsValid(Money money, Auction auction, Vehicle vehicle) =>
-        money.Amount > 0 &&
-        (auction.Bids.Count == 0 || money.Amount > auction.CurrentHighestBid.Amount) &&
-        money.CurrencyType == vehicle.StartingBid.CurrencyType &&
-        money.Amount >= vehicle.StartingBid.Amount;
+    
 
     private Result<T> LogAndReturnFailure<T>(string message, Problem problem, VehicleId vehicleId, string? bidder = null, Money? money = null)
     {
