@@ -2,9 +2,6 @@
 using Application.DTOs.Requests;
 using Application.Extensions;
 using Application.Interfaces;
-using Application.Services;
-using Domain.Entities;
-using Domain.Entities.Auction;
 using Domain.Entities.Vehicles;
 
 namespace Api.Endpoints;
@@ -29,20 +26,20 @@ public static class AuctionsEndpoints
 
         group.MapPost("/bid/{vehicleId:guid}", async (IAuctionService service, Guid vehicleId, BidRequest bid) =>
         {
-            var bidResult = await service.PlaceBid(bid.ToDto(new VehicleId(vehicleId)));
+            var bidResult = await service.PlaceBid(bid.RequestToDto(), new VehicleId(vehicleId));
             return bidResult.ToApiResult();
         });
         
         
         group.MapGet("/active/{vehicleId:guid}", (IAuctionMonitor monitor, Guid vehicleId, CancellationToken cancellationToken) =>
         {
-            async IAsyncEnumerable<SseItem<Auction>> GetActiveAuctions()
+            async IAsyncEnumerable<SseItem<AuctionMonitoringResponse>> GetActiveAuctions()
             {
                 await foreach (var auction in monitor.GetActiveAuctionsAsync(cancellationToken))
                 {
-                    if (auction.VehicleId == new VehicleId(vehicleId))
+                    if (auction.Auction.VehicleId == vehicleId)
                     {
-                        yield return new SseItem<Auction>(auction)
+                        yield return new SseItem<AuctionMonitoringResponse>(auction)
                         {
                             ReconnectionInterval = TimeSpan.FromMinutes(1)
                         };

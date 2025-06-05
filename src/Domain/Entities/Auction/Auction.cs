@@ -60,4 +60,5 @@ public class Auction
     }
 
     private Bid CurrentHighestBid => Bids.Count > 0 ? Bids[^1] : Bid.Empty;
+
 }

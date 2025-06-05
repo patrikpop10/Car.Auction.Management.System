@@ -12,5 +12,5 @@ public sealed class Bid
         Value = value;
         PlacedAt = DateTime.UtcNow;
     }
-    public static Bid Empty => new Bid(string.Empty, Money.None());
+    public static Bid Empty => new (string.Empty, Money.None());
 }

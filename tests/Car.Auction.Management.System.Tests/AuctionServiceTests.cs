@@ -1,5 +1,6 @@
 using System.Threading.Channels;
 using Application.DTOs;
+using Application.Interfaces;
 using Application.Services;
 using Domain.Entities;
 using Domain.Entities.Auction;
@@ -25,7 +26,7 @@ public class AuctionServiceTests
         _auctionRepo = new InMemoryAuctionRepository();
         var logger = Substitute.For<ILogger<AuctionService>>();
         var loggerVehicle = Substitute.For<ILogger<VehicleService>>();
-        _service = new AuctionService(_vehicleRepo, _auctionRepo, Channel.CreateUnbounded<Domain.Entities.Auction.Auction>().Writer, logger);
+        _service = new AuctionService(_vehicleRepo, _auctionRepo, Channel.CreateUnbounded<AuctionMonitoringResponse>().Writer, logger);
         _vehicleService = new VehicleService(_vehicleRepo, _auctionRepo, loggerVehicle);
     }
 
@@ -112,7 +113,6 @@ public class AuctionServiceTests
         await _service.StartAuction(v.Id);
         var bidDto1 = new BidDto
         {
-            Id = v.Id,
             Bidder = "Alice",
             Amount = new MoneyDto
             {
@@ -120,11 +120,10 @@ public class AuctionServiceTests
                 Currency = "USD"
             }
         };
-        await _service.PlaceBid(bidDto1);
+        await _service.PlaceBid(bidDto1, v.Id);
 
         var bidDto2 = new BidDto
         {
-            Id = v.Id, 
             Bidder ="Bob", 
             Amount = new MoneyDto 
             {
@@ -133,7 +132,7 @@ public class AuctionServiceTests
             }
         };
 
-    await _service.PlaceBid(bidDto2);
+    await _service.PlaceBid(bidDto2, v.Id);
         var auction =  await _auctionRepo.GetActiveByVehicleId(v.Id);
         
         Assert.That(2, Is.EqualTo(auction.Bids.Count));
@@ -150,7 +149,6 @@ public class AuctionServiceTests
         
         var bidDto1 = new BidDto
         {
-            Id = v.Id,
             Bidder = "Alice",
             Amount = new MoneyDto {
                 Amount = 5000,
@@ -159,17 +157,16 @@ public class AuctionServiceTests
         }
         };
         
-        await _service.PlaceBid(bidDto1);
+        await _service.PlaceBid(bidDto1, v.Id);
         
         var bidDto2 = new BidDto{
-            Id = v.Id, 
             Bidder ="Bob", 
             Amount = new MoneyDto{ 
                 Amount = 4900,
                 Currency = "USD"
             }
         };
-        var result = await _service.PlaceBid(bidDto2);
+        var result = await _service.PlaceBid(bidDto2, v.Id);
         
         Assert.That(result.Problem.Status, Is.EqualTo(400));
         Assert.That(result.Problem.Title, Is.EqualTo("InvalidBidAmount"));
@@ -185,7 +182,6 @@ public class AuctionServiceTests
 
         var bid = new BidDto
         {
-            Id = v.Id,
             Bidder = "Bob",
             Amount = new MoneyDto
             {
@@ -193,7 +189,7 @@ public class AuctionServiceTests
                 Currency = "USD"
             }
         };
-        var result = await _service.PlaceBid(bid);
+        var result = await _service.PlaceBid(bid, v.Id);
         
         Assert.That(result.Problem.Status, Is.EqualTo(404));
         Assert.That(result.Problem.Title, Is.EqualTo("AuctionNotActive"));

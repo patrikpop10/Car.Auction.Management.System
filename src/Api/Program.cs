@@ -16,7 +16,7 @@ builder.Services.AddLogging();
 builder.Services.AddSingleton<IVehicleRepository, InMemoryVehicleRepository>();
 builder.Services.AddSingleton<IAuctionRepository, InMemoryAuctionRepository>();
 
-var channel = Channel.CreateUnbounded<Auction>(new UnboundedChannelOptions
+var channel = Channel.CreateUnbounded<AuctionMonitoringResponse>(new UnboundedChannelOptions
 {
     SingleReader = true,
     SingleWriter = false

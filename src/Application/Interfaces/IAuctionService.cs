@@ -13,6 +13,6 @@ public interface IAuctionService
 {
     Task<Result<StartAuctionResponse>> StartAuction(VehicleId vehicleId);
     Task<Result<AuctionClosedResponse>> CloseAuction(VehicleId vehicleId);
-    Task<Result<BidResponse>> PlaceBid(BidDto bidDto); 
+    Task<Result<BidResponse>> PlaceBid(BidDto bidDto, VehicleId vehicleId); 
     
 }

@@ -17,13 +17,13 @@ public class AuctionService : IAuctionService
 {
     private readonly IVehicleRepository _vehicleRepo;
     private readonly IAuctionRepository _auctionRepo;
-    private readonly ChannelWriter<Auction> _auctionChannelWriter;
+    private readonly ChannelWriter<AuctionMonitoringResponse> _auctionChannelWriter;
     private readonly ILogger<AuctionService> _logger;
 
     public AuctionService(
         IVehicleRepository vehicleRepo,
         IAuctionRepository auctionRepo,
-        ChannelWriter<Auction> auctionChannelWriter,
+        ChannelWriter<AuctionMonitoringResponse> auctionChannelWriter,
         ILogger<AuctionService> logger)
     {
         _vehicleRepo = vehicleRepo;
@@ -77,29 +77,29 @@ public class AuctionService : IAuctionService
             closedAuction.Value.WinningBid.ToDto()));
     }
 
-    public async Task<Result<BidResponse>> PlaceBid(BidDto bidDto)
+    public async Task<Result<BidResponse>> PlaceBid(BidDto bidDto, VehicleId vehicleId)
     {
-        var auction = await _auctionRepo.GetActiveByVehicleId(bidDto.Id);
-        var vehicle = await _vehicleRepo.GetById(bidDto.Id);
+        var auction = await _auctionRepo.GetActiveByVehicleId(vehicleId);
+        var vehicle = await _vehicleRepo.GetById(vehicleId);
 
         if (!VehicleExists(vehicle))
-            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a non-existent vehicle", Problem.VehicleNotFound(bidDto.Id), bidDto.Id);
+            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a non-existent vehicle", Problem.VehicleNotFound(vehicleId), vehicleId);
 
         if (auction is null)
-            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a vehicle without an active auction", Problem.AuctionNotActive(bidDto.Id), bidDto.Id);
+            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a vehicle without an active auction", Problem.AuctionNotActive(vehicleId), vehicleId);
         
 
-        _logger.LogInformation("Placing bid for vehicle {VehicleId} by {Bidder}: {Money}", bidDto.Id, bidDto.Bidder, bidDto.Amount);
+        _logger.LogInformation("Placing bid for vehicle {VehicleId} by {Bidder}: {Money}", vehicleId, bidDto.Bidder, bidDto.Amount);
 
-        var bid = bidDto.ToDomain();
+        var bid = bidDto.DtoToDomain();
         var bidResult = auction.PlaceBid(bid, vehicle!);
         if (!bidResult.IsSuccess)
         {
-            return LogAndReturnFailure<BidResponse>("Failed to place bid", bidResult.Problem!, bidDto.Id, bidDto.Bidder, bidDto.Amount.ToDomain());
+            return LogAndReturnFailure<BidResponse>("Failed to place bid", bidResult.Problem!, vehicleId, bidDto.Bidder, bidDto.Amount.ToDomain());
         }
 
-        await _auctionChannelWriter.WriteAsync(auction);
-        return Result<BidResponse>.Success(new BidResponse(vehicle!.ToDto(), bid.Bidder, bid.Value.ToDto()));
+        await _auctionChannelWriter.WriteAsync(auction.ToMonitoringResponse(vehicle, bid));
+        return Result<BidResponse>.Success(new BidResponse(vehicle!.ToResponse(), bid.Bidder, bid.Value.ToDto()));
     }
 
     private static bool VehicleExists(Vehicle? vehicle) => vehicle is not null;

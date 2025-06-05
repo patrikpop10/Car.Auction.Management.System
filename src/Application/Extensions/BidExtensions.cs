@@ -8,17 +8,24 @@ namespace Application.Extensions;
 
 public static class BidExtensions
 {
-   public static BidDto ToDto(this BidRequest bid, VehicleId vehicleId)
+   public static BidDto RequestToDto(this BidRequest bid)
    {
-      return new BidDto { Id = vehicleId, Bidder = bid.Bidder, Amount = bid.Amount };
+      return new BidDto { Bidder = bid.Bidder, Amount = bid.Amount };
    }
-   public static BidResponse ToResponse(this BidDto bid, VehicleResponse vehicle)
+   public static Bid DtoToDomain(this BidDto bid)
+      => new Bid(bid.Bidder, bid.Amount.ToDomain());
+   
+   public static BidDto ToDto(this Bid bid)
    {
-      return new BidResponse(vehicle, bid.Bidder, bid.Amount);
+      return new BidDto
+      {
+         Bidder = bid.Bidder,
+         Amount = bid.Value.ToDto()
+      };
    }
-   public static Bid ToDomain(this BidDto bid)
-   {
-      return new Bid(bid.Bidder, bid.Amount.ToDomain()); 
-   }
+   
+   
+   
+   
    
 }

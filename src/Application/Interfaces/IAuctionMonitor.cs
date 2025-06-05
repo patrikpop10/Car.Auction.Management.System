@@ -4,5 +4,7 @@ namespace Application.Interfaces;
 
 public interface IAuctionMonitor
 {
-    IAsyncEnumerable<Auction> GetActiveAuctionsAsync(CancellationToken cancellationToken);
+    IAsyncEnumerable<AuctionMonitoringResponse> GetActiveAuctionsAsync(CancellationToken cancellationToken);
 }
+
+public record AuctionDto(Guid VehicleId, DateTime StartTime, DateTime? EndTime, bool IsActive);
