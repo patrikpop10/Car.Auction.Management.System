@@ -1,8 +1,9 @@
 using Application.Models.Dtos;
 
-namespace Application.Models.Requests;
+namespace Application.Models.Responses;
 
-public record VehicleRequest
+
+public sealed record SearchVehicleResponse
 {
     public required Guid Id { get; init; }
     public required VehicleDto Vehicle { get; init; }

@@ -1,8 +1,6 @@
-﻿using Domain;
-using Domain.Common;
-using Microsoft.AspNetCore.Http;
+﻿using Domain.Common;
 
-namespace Application.Extensions;
+namespace Api;
 
 public static class ResultExtensions
 {

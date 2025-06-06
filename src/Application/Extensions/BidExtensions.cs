@@ -1,9 +1,6 @@
-using Application.DTOs;
-using Application.DTOs.Requests;
 using Application.Models.Dtos;
 using Application.Models.Requests;
 using Domain.Entities.Auction;
-using Domain.Entities.Vehicles;
 
 namespace Application.Extensions;
 
@@ -11,10 +8,10 @@ public static class BidExtensions
 {
    public static BidDto RequestToDto(this BidRequest bid)
    {
-      return new BidDto { Bidder = bid.Bidder, Amount = bid.Amount };
+      return new BidDto { Bidder = bid.Bidder, Amount = bid.Bid };
    }
    public static Bid RequestToDomain(this BidRequest bid)
-      => new Bid(bid.Bidder, bid.Amount.ToDomain());
+      => new Bid(bid.Bidder, bid.Bid.ToDomain());
    
    public static BidDto ToDto(this Bid bid)
    {

@@ -1,9 +1,10 @@
 ﻿using System.Net.ServerSentEvents;
-using Application.DTOs.Requests;
 using Application.Extensions;
 using Application.Interfaces;
 using Application.Models.Requests;
+using Application.Models.Responses;
 using Domain.Entities.Vehicles;
+using FluentValidation;
 
 namespace Api.Endpoints;
 
@@ -25,12 +26,17 @@ public static class AuctionsEndpoints
             return closeAuctionResult.ToApiResult();
         });
 
-        group.MapPost("/bid/{vehicleId:guid}", async (IAuctionService service, Guid vehicleId, BidRequest bid) =>
+        group.MapPost("/bid/{vehicleId:guid}", async (IAuctionService service, IValidator<BidRequest> bidValidator, Guid vehicleId, BidRequest bid) =>
         {
+            var validationResult = await bidValidator.ValidateAsync(bid);
+            if (!validationResult.IsValid) 
+            {
+                return Results.ValidationProblem(validationResult.ToDictionary());
+            }
+            
             var bidResult = await service.PlaceBid(bid, new VehicleId(vehicleId));
             return bidResult.ToApiResult();
         });
-        
         
         group.MapGet("/active/{vehicleId:guid}", (IAuctionMonitor monitor, Guid vehicleId, CancellationToken cancellationToken) =>
         {
@@ -40,7 +46,7 @@ public static class AuctionsEndpoints
                 {
                     if (auction.Auction.VehicleId == vehicleId)
                     {
-                        yield return new SseItem<AuctionMonitoringResponse>(auction)
+                        yield return new SseItem<AuctionMonitoringResponse>(auction) 
                         {
                             ReconnectionInterval = TimeSpan.FromMinutes(1)
                         };

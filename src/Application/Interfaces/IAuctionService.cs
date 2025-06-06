@@ -1,13 +1,7 @@
-using Application.DTOs;
-using Application.DTOs.Requests;
 using Application.Models.Requests;
 using Application.Models.Responses;
-using Domain;
 using Domain.Common;
-using Domain.Entities;
-using Domain.Entities.Auction;
 using Domain.Entities.Vehicles;
-using Domain.Events;
 
 namespace Application.Interfaces;
 

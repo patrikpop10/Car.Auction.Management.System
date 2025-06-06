@@ -1,8 +1,7 @@
-﻿using Application.DTOs;
-using Application.DTOs.Requests;
-using Application.Extensions;
+﻿using Application.Extensions;
+using Application.Interfaces;
 using Application.Models.Dtos;
-using Domain;
+using Application.Models.Requests;
 using Domain.Common;
 using Domain.Entities.Vehicles;
 using Domain.Repositories;
@@ -63,19 +62,19 @@ public class VehicleService : IVehicleService
         {
             Hatchback h => new VehicleRequest
             {
-                Id = h.Id.Id, Car = new CarDto { Type = "Hatchback", Manufacturer = h.Manufacturer, Model = h.Model, Year = h.Year, NumberOfDoors = h.NumberOfDoors }, StartingBid = h.StartingBid.ToDto(),
+                Id = h.Id.Id, Vehicle = new VehicleDto { Type = "Hatchback", Manufacturer = h.Manufacturer, Model = h.Model, Year = h.Year, NumberOfDoors = h.NumberOfDoors }, StartingBid = h.StartingBid.ToDto(),
             },
             Sedan s => new VehicleRequest
             {
-                Id = s.Id.Id, Car = new CarDto {Type = "Sedan", Manufacturer = s.Manufacturer, Model = s.Model, Year = s.Year, NumberOfDoors = s.NumberOfDoors }, StartingBid = s.StartingBid.ToDto(),
+                Id = s.Id.Id, Vehicle = new VehicleDto {Type = "Sedan", Manufacturer = s.Manufacturer, Model = s.Model, Year = s.Year, NumberOfDoors = s.NumberOfDoors }, StartingBid = s.StartingBid.ToDto(),
             },
             SUV suv => new VehicleRequest
             {
-                Id = suv.Id.Id, Car = new CarDto(){Type = "SUV", Manufacturer = suv.Manufacturer, Model = suv.Model, Year = suv.Year, NumberOfSeats = suv.NumberOfSeats }, StartingBid = suv.StartingBid.ToDto(),
+                Id = suv.Id.Id, Vehicle = new VehicleDto(){Type = "SUV", Manufacturer = suv.Manufacturer, Model = suv.Model, Year = suv.Year, NumberOfSeats = suv.NumberOfSeats }, StartingBid = suv.StartingBid.ToDto(),
             },
             Truck t => new VehicleRequest
             {
-                Id = t.Id.Id, Car = new CarDto{Type = "Truck", Manufacturer = t.Manufacturer, Model = t.Model, Year = t.Year, LoadCapacity = t.LoadCapacity }, StartingBid = t.StartingBid.ToDto(),
+                Id = t.Id.Id, Vehicle = new VehicleDto{Type = "Truck", Manufacturer = t.Manufacturer, Model = t.Model, Year = t.Year, LoadCapacity = t.LoadCapacity }, StartingBid = t.StartingBid.ToDto(),
             },
             _ => throw new NotImplementedException()
         };

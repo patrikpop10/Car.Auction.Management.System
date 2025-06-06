@@ -1,7 +1,7 @@
 using System.Threading.Channels;
-using Application.DTOs;
-using Application.Interfaces;
 using Application.Models.Dtos;
+using Application.Models.Requests;
+using Application.Models.Responses;
 using Application.Services;
 using Domain.Entities;
 using Domain.Entities.Vehicles;
@@ -66,7 +66,7 @@ public class AuctionServiceTests {
 
         var results = await _vehicleService.SearchVehicles(type: "Hatchback", manufacturer: "Honda");
         Assert.That(1, Is.EqualTo(results.Count()));
-        Assert.That("Fit", Is.EqualTo(results.First().Car.Model));
+        Assert.That("Fit", Is.EqualTo(results.First().Vehicle.Model));
     }
 
     [Test]
@@ -109,26 +109,11 @@ public class AuctionServiceTests {
 
         await _vehicleService.AddVehicle(v);
         await _service.StartAuction(v.Id);
-        var bidDto1 = new BidDto
-        {
-            Bidder = "Alice",
-            Amount = new MoneyDto
-            {
-                Amount = 5000,
-                Currency = "USD"
-            }
-        };
+        var bidDto1 = new BidRequest("Alice", new MoneyDto { Amount = 5000, Currency ="USD"} );
+       
         await _service.PlaceBid(bidDto1, v.Id);
 
-        var bidDto2 = new BidDto
-        {
-            Bidder ="Bob", 
-            Amount = new MoneyDto 
-            {
-                Amount = 5100,
-                Currency = "USD"
-            }
-        };
+        var bidDto2 = new BidRequest("Bob", new MoneyDto { Amount = 5100, Currency ="USD"} );
 
     await _service.PlaceBid(bidDto2, v.Id);
         var auction =  await _auctionRepo.GetActiveByVehicleId(v.Id);
@@ -138,32 +123,17 @@ public class AuctionServiceTests {
     }
 
     [Test]
-    public async Task PlaceBid_BelowCurrentHighest_Throws()
+    public async Task PlaceBid_BelowCurrentHighest_ReturnsError()
     {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
         
         await _vehicleService.AddVehicle(v);
         await _service.StartAuction(v.Id);
-        
-        var bidDto1 = new BidDto
-        {
-            Bidder = "Alice",
-            Amount = new MoneyDto {
-                Amount = 5000,
-                Currency = "USD"
-            
-        }
-        };
-        
+
+        var bidDto1 = new BidRequest("Alice", new MoneyDto { Amount = 5000, Currency = "USD" });
         await _service.PlaceBid(bidDto1, v.Id);
-        
-        var bidDto2 = new BidDto{
-            Bidder ="Bob", 
-            Amount = new MoneyDto{ 
-                Amount = 4900,
-                Currency = "USD"
-            }
-        };
+
+        var bidDto2 = new BidRequest("Bob", new MoneyDto { Amount = 4900, Currency = "USD" });
         var result = await _service.PlaceBid(bidDto2, v.Id);
         
         Assert.That(result.Problem.Status, Is.EqualTo(400));
@@ -178,15 +148,7 @@ public class AuctionServiceTests {
         
         await _vehicleService.AddVehicle(v);
 
-        var bid = new BidDto
-        {
-            Bidder = "Bob",
-            Amount = new MoneyDto
-            {
-                Amount = 5000,
-                Currency = "USD"
-            }
-        };
+        var bid = new BidRequest("Alice", new MoneyDto { Amount = 5000, Currency ="USD"} );
         var result = await _service.PlaceBid(bid, v.Id);
         
         Assert.That(result.Problem.Status, Is.EqualTo(404));
