@@ -1,6 +1,6 @@
 ﻿using Domain.Entities.Vehicles;
 
-namespace Application.Common;
+namespace Domain.Common;
 
 public record Problem
 {
@@ -70,8 +70,6 @@ public record Problem
         };
     }
     
-    
-    
     public static Problem InternalServerError()
     {
         return new Problem
@@ -89,6 +87,16 @@ public record Problem
             Status = 404,
             Title = "AuctionNotFound",
             ErrorMessage = $"No auction found for the vehicle with ID {vehicleId.Id}."
+        };
+    }
+
+    public static Problem VehicleIdMismatch(VehicleId vehicleId, VehicleId vehicleId1)
+    {
+        return new Problem
+        {
+            Status = 400,
+            Title = "VehicleIdMismatch",
+            ErrorMessage = $"The provided vehicle ID {vehicleId1.Id} does not match the auction's vehicle ID {vehicleId.Id}."
         };
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Application.Common;
+﻿namespace Domain.Common;
 
 public class Result<T>
 {
@@ -6,13 +6,13 @@ public class Result<T>
     public T? Value { get; }
     public Problem? Problem { get; }
 
-    protected Result(T value)
+    private Result(T value)
     {
         IsSuccess = true;
         Value = value;
     }
 
-    protected Result(Problem problem)
+    private Result(Problem problem)
     {
         IsSuccess = false;
         Problem = problem;

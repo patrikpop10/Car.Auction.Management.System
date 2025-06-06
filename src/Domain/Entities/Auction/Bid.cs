@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities;
+﻿namespace Domain.Entities.Auction;
 
 public sealed class Bid
 {
@@ -12,4 +12,5 @@ public sealed class Bid
         Value = value;
         PlacedAt = DateTime.UtcNow;
     }
+    public static Bid Empty => new (string.Empty, Money.None());
 }

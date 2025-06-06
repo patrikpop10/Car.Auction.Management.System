@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "src\Api\Api.csproj",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05-4346-4AA6-1389-037BE0695223}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Car.Auction.Management.System", "tests\Car.Auction.Management.System\Car.Auction.Management.System.csproj", "{8F5EBCBB-4669-4503-B0F3-94EF5419B847}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Car.Auction.Management.System.Tests", "tests\Car.Auction.Management.System.Tests\Car.Auction.Management.System.Tests.csproj", "{8F5EBCBB-4669-4503-B0F3-94EF5419B847}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,23 +1,22 @@
-﻿using System.Threading.Channels;
-using Domain.Entities;
+﻿using System.Runtime.CompilerServices;
+using System.Threading.Channels;
+using Application.Interfaces;
 
 namespace Application.Services;
 
 public class AuctionMonitor : IAuctionMonitor
 {
-    private readonly ChannelReader<Auction> _channelReader;
+    private readonly ChannelReader<AuctionMonitoringResponse> _channelReader;
 
-    public AuctionMonitor(ChannelReader<Auction> channelReader)
+    public AuctionMonitor(ChannelReader<AuctionMonitoringResponse> channelReader)
     {
         _channelReader = channelReader;
     }
 
-    public async IAsyncEnumerable<Auction> GetActiveAuctionsAsync(CancellationToken cancellationToken)
+    public async IAsyncEnumerable<AuctionMonitoringResponse> GetActiveAuctionsAsync([EnumeratorCancellation] CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested && await _channelReader.WaitToReadAsync(cancellationToken))
         {
-            // Wait for the next auction to be available
-            
             yield return await _channelReader.ReadAsync(cancellationToken);
         }
         

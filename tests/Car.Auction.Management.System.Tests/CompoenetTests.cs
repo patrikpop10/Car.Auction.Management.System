@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Threading.Channels;
 using Api.Endpoints;
 using Application.DTOs;
+using Application.DTOs.Requests;
 using Application.Services;
 using FluentAssertions;
 using Infra.Repositories;
@@ -40,15 +41,22 @@ public class ApiComponentTests
     [Test]
     public async Task CanAddAndSearchVehicle()
     {
-        var vehicle = new VehicleDto()
+        var vehicle = new VehicleRequest()
         {
             Id = Guid.NewGuid(),
-            Type = "Sedan",
-            Manufacturer = "Toyota",
-            Model = "Camry",
-            Year = 2024,
-            StartingBid = new MoneyDto(10000, "USD"),
-            NumberOfDoors = 4
+            Car = new CarDto
+            {
+                Type = "Sedan",
+                Manufacturer = "Toyota",
+                Model = "Camry",
+                Year = 2024,
+                NumberOfDoors = 5
+            },
+            StartingBid = new MoneyDto
+            {
+                Amount = 10000,
+                Currency = "USD"
+            },
         };
 
         var resp = await _client.PostAsync("/vehicles", AsJson(vehicle));
@@ -68,25 +76,38 @@ public class ApiComponentTests
     public async Task AddingVehicleWithDuplicateIdReturnsError()
     {
         var id = Guid.NewGuid();
-        var vehicle1 = new VehicleDto()
+        var vehicle1 = new VehicleRequest()
         {
             Id = id,
-            Type = "Hatchback",
-            Manufacturer = "Toyota",
-            Model = "Yaris",
-            Year = 2023,
-            StartingBid = new MoneyDto(5000, "USD"),
-            NumberOfDoors = 5
+            Car = new CarDto(){
+                Type = "Sedan",
+                Manufacturer = "Honda",
+                Model = "Accord",
+                Year = 2022,
+                NumberOfDoors = 5,
+                },
+            StartingBid = new MoneyDto
+            {
+                Amount = 5000,
+                Currency = "USD"
+            },
         };
-        var vehicle2 = new VehicleDto()
+        var vehicle2 = new VehicleRequest()
         {
             Id = id,
-            Type = "Hatchback",
-            Manufacturer = "Honda",
-            Model = "Fit",
-            Year = 2022,
-            StartingBid = new MoneyDto(6000, "USD"),
-            NumberOfDoors = 5
+            Car = new CarDto()
+            {
+                Type = "Hatchback",
+                Manufacturer = "Toyota",
+                Model = "Yaris",
+                Year = 2023,
+                NumberOfDoors = 5,
+            },
+            StartingBid = new MoneyDto
+            {
+                Amount = 6000,
+                Currency = "USD"
+            },
         };
 
         await _client.PostAsync("/vehicles", AsJson(vehicle1));
@@ -97,15 +118,24 @@ public class ApiComponentTests
     [Test]
     public async Task CanStartAndCloseAuction()
     {
-        var vehicle = new VehicleDto()
+        var vehicle = new VehicleRequest()
         {
             Id = Guid.NewGuid(),
-            Type = "Truck",
-            Manufacturer = "Volvo",
-            Model = "VNL",
-            Year = 2020,
-            StartingBid = new MoneyDto(30000, "USD"),
-            LoadCapacity = 10.0
+            Car = new CarDto()
+            {
+                Type = "Truck",
+                Manufacturer = "Ford",
+                Model = "F-150",
+                Year = 2022,
+                NumberOfSeats = 2,
+                LoadCapacity = 10.0
+
+            },
+            StartingBid = new MoneyDto
+            {
+                Amount = 30000,
+                Currency = "USD"
+            },
         };
         
         var addVehicleResponse = await _client.PostAsync("/vehicles", AsJson(vehicle));
@@ -127,15 +157,22 @@ public class ApiComponentTests
     public async Task StartingAuctionWhenAlreadyActiveReturnsError()
     {
         // Arrange
-        var vehicle = new VehicleDto()
+        var vehicle = new VehicleRequest()
         {
             Id = Guid.NewGuid(),
-            Type = "SUV",
-            Manufacturer = "Nissan",
-            Model = "Rogue",
-            Year = 2021,
-            StartingBid = new MoneyDto(25000, "USD"),
-            NumberOfSeats = 5
+            Car = new CarDto()
+            {
+                Type = "SUV",
+                Manufacturer = "Nissan",
+                Model = "Rogue",
+                Year = 2021,
+                NumberOfSeats = 5
+            },
+            StartingBid = new MoneyDto
+            {
+                Amount = 25000,
+                Currency = "USD"
+            },
         };
         // Act 
         var createVehicleResponse = await _client.PostAsync("/vehicles", AsJson(vehicle));
@@ -151,30 +188,49 @@ public class ApiComponentTests
     [Test]
     public async Task CanPlaceBidAndEnforceBidRules()
     {
-        var vehicle = new VehicleDto
+        var vehicle = new VehicleRequest
         {
             Id = Guid.NewGuid(),
-            Type = "Sedan",
-            Manufacturer = "Honda",
-            Model = "Accord",
-            Year = 2022,
-            StartingBid = new MoneyDto(20000, "USD"),
-            NumberOfDoors = 4
+            Car = new CarDto
+            {
+                Type = "Sedan",
+                Manufacturer = "Honda",
+                Model = "Accord",
+                Year = 2022,
+                NumberOfDoors = 4
+            },
+            StartingBid = new MoneyDto
+            {
+                Amount = 20000, 
+                Currency = "USD"
+            },
         };
         
         await _client.PostAsync("/vehicles", AsJson(vehicle));
         await _client.PostAsync($"/auctions/start/{vehicle.Id}", null);
 
-        var bid1 = new BidRequest("Alice", new MoneyDto(21000, "USD"));
+        var bid1 = new BidRequest("Alice", new MoneyDto
+        {
+            Amount = 21000,
+            Currency = "USD"
+        });
         var bidResp1 = await _client.PostAsync($"/auctions/bid/{vehicle.Id}", AsJson(bid1));
         bidResp1.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var bid2 = new BidRequest("Bob", new MoneyDto(22000, "USD"));
+        var bid2 = new BidRequest("Bob", new MoneyDto
+        {
+            Amount = 22000,
+            Currency = "USD"
+        });
         var bidResponse = await _client.PostAsync($"/auctions/bid/{vehicle.Id}", AsJson(bid2));
         bidResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Try lower bid
-        var badBid = new BidRequest("Charlie", new MoneyDto(21500, "USD"));
+        var badBid = new BidRequest("Charlie", new MoneyDto
+        {
+            Amount = 21500,
+            Currency = "USD"
+        });
         var badBidResponse = await _client.PostAsync($"/auctions/bid/{vehicle.Id}", AsJson(badBid));
         badBidResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
@@ -182,18 +238,29 @@ public class ApiComponentTests
     [Test]
     public async Task PlacingBidWithoutActiveAuctionReturnsError()
     {
-        var vehicle = new VehicleDto()
+        var vehicle = new VehicleRequest()
         {
             Id = Guid.NewGuid(),
-            Type = "Hatchback",
-            Manufacturer = "Mazda",
-            Model = "3",
-            Year = 2021,
-            StartingBid = new MoneyDto(15000, "USD"),
-            NumberOfDoors = 5
+            Car = new CarDto()
+            {
+                Type = "Hatchback",
+                Manufacturer = "Mazda",
+                Model = "3",
+                Year = 2021,
+                NumberOfDoors = 5
+            },
+            StartingBid = new MoneyDto
+            {
+                Amount = 15000,
+                Currency = "USD"
+            }
         };
         await _client.PostAsync("/vehicles", AsJson(vehicle));
-        var bid = new BidRequest("Dave", new MoneyDto(8100, "USD") );
+        var bid = new BidRequest("Dave", new MoneyDto
+        {
+            Amount = 8100,
+            Currency = "USD"
+        });
         var resp = await _client.PostAsync($"/auctions/bid/{vehicle.Id}", AsJson(bid));
         resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
@@ -201,15 +268,23 @@ public class ApiComponentTests
     [Test]
     public async Task ClosingAuctionThatIsNotActiveReturnsError()
     {
-        var vehicle = new VehicleDto()
+        var vehicle = new VehicleRequest()
         {
             Id = Guid.NewGuid(),
-            Type = "SUV",
-            Manufacturer = "Ford",
-            Model = "Explorer",
-            Year = 2023,
-            StartingBid = new MoneyDto(35000, "USD"),
-            NumberOfSeats = 7
+           Car = new CarDto()
+           {
+               Type = "SUV",
+               Manufacturer = "Ford",
+               Model = "Explorer",
+               Year = 2023,
+               NumberOfSeats = 7
+
+           },
+            StartingBid = new MoneyDto
+            {
+                Amount = 35000,
+                Currency = "USD"
+            },
         };
         
         await _client.PostAsync("/vehicles", AsJson(vehicle));

@@ -1,26 +1,30 @@
 using System.Threading.Channels;
+using Application.DTOs;
+using Application.Interfaces;
 using Application.Services;
 using Domain.Entities;
 using Domain.Entities.Vehicles;
 using Infra.Repositories;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
 
 namespace Car.Auction.Management.System;
 
 [TestFixture]
-public class AuctionServiceTests
-{
+public class AuctionServiceTests {
     private AuctionService _service;
     private InMemoryVehicleRepository _vehicleRepo;
     private InMemoryAuctionRepository _auctionRepo;
     private VehicleService _vehicleService;
 
     [SetUp]
-    public void Setup()
-    {
+    public void Setup() {
         _vehicleRepo = new InMemoryVehicleRepository();
         _auctionRepo = new InMemoryAuctionRepository();
-        _service = new AuctionService(_vehicleRepo, _auctionRepo, Channel.CreateUnbounded<Domain.Entities.Auction>().Writer);
-        _vehicleService = new VehicleService(_vehicleRepo, _auctionRepo);
+        var logger = Substitute.For<ILogger<AuctionService>>();
+        var loggerVehicle = Substitute.For<ILogger<VehicleService>>();
+        _service = new AuctionService(_vehicleRepo, _auctionRepo, Channel.CreateUnbounded<AuctionMonitoringResponse>().Writer, logger);
+        _vehicleService = new VehicleService(_vehicleRepo, _auctionRepo, loggerVehicle);
     }
 
     [Test]
@@ -61,7 +65,7 @@ public class AuctionServiceTests
 
         var results = await _vehicleService.SearchVehicles(type: "Hatchback", manufacturer: "Honda");
         Assert.That(1, Is.EqualTo(results.Count()));
-        Assert.That("Fit", Is.EqualTo(results.First().Model));
+        Assert.That("Fit", Is.EqualTo(results.First().Car.Model));
     }
 
     [Test]
@@ -101,11 +105,31 @@ public class AuctionServiceTests
     public async Task PlaceBid_Success()
     {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
-        
+
         await _vehicleService.AddVehicle(v);
         await _service.StartAuction(v.Id);
-        await _service.PlaceBid(v.Id, "Alice", new Money(5000, CurrencyType.USD));
-        await _service.PlaceBid(v.Id, "Bob", new Money(5100, CurrencyType.USD));
+        var bidDto1 = new BidDto
+        {
+            Bidder = "Alice",
+            Amount = new MoneyDto
+            {
+                Amount = 5000,
+                Currency = "USD"
+            }
+        };
+        await _service.PlaceBid(bidDto1, v.Id);
+
+        var bidDto2 = new BidDto
+        {
+            Bidder ="Bob", 
+            Amount = new MoneyDto 
+            {
+                Amount = 5100,
+                Currency = "USD"
+            }
+        };
+
+    await _service.PlaceBid(bidDto2, v.Id);
         var auction =  await _auctionRepo.GetActiveByVehicleId(v.Id);
         
         Assert.That(2, Is.EqualTo(auction.Bids.Count));
@@ -119,8 +143,27 @@ public class AuctionServiceTests
         
         await _vehicleService.AddVehicle(v);
         await _service.StartAuction(v.Id);
-        await _service.PlaceBid(v.Id, "Alice", new Money(5100, CurrencyType.USD));
-        var result = await _service.PlaceBid(v.Id, "Bob", new Money(5000, CurrencyType.USD));
+        
+        var bidDto1 = new BidDto
+        {
+            Bidder = "Alice",
+            Amount = new MoneyDto {
+                Amount = 5000,
+                Currency = "USD"
+            
+        }
+        };
+        
+        await _service.PlaceBid(bidDto1, v.Id);
+        
+        var bidDto2 = new BidDto{
+            Bidder ="Bob", 
+            Amount = new MoneyDto{ 
+                Amount = 4900,
+                Currency = "USD"
+            }
+        };
+        var result = await _service.PlaceBid(bidDto2, v.Id);
         
         Assert.That(result.Problem.Status, Is.EqualTo(400));
         Assert.That(result.Problem.Title, Is.EqualTo("InvalidBidAmount"));
@@ -133,7 +176,17 @@ public class AuctionServiceTests
         var v = new Sedan( new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
         
         await _vehicleService.AddVehicle(v);
-        var result = await _service.PlaceBid(v.Id, "Bob", new Money(5000, CurrencyType.USD));
+
+        var bid = new BidDto
+        {
+            Bidder = "Bob",
+            Amount = new MoneyDto
+            {
+                Amount = 5000,
+                Currency = "USD"
+            }
+        };
+        var result = await _service.PlaceBid(bid, v.Id);
         
         Assert.That(result.Problem.Status, Is.EqualTo(404));
         Assert.That(result.Problem.Title, Is.EqualTo("AuctionNotActive"));

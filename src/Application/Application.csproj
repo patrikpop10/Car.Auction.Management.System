@@ -12,12 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Http.Abstractions">
-      <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\10.0.0-preview.4.25258.110\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNetCore.Http.Results">
-      <HintPath>C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\10.0.0-preview.4.25258.110\Microsoft.AspNetCore.Http.Results.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0-preview.4.25258.110" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
-﻿using Application.Common;
+﻿using Domain;
+using Domain.Common;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Extensions;
