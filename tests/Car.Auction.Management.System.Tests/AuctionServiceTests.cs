@@ -3,7 +3,6 @@ using Application.DTOs;
 using Application.Interfaces;
 using Application.Services;
 using Domain.Entities;
-using Domain.Entities.Auction;
 using Domain.Entities.Vehicles;
 using Infra.Repositories;
 using Microsoft.Extensions.Logging;
@@ -12,16 +11,14 @@ using NSubstitute;
 namespace Car.Auction.Management.System;
 
 [TestFixture]
-public class AuctionServiceTests
-{
+public class AuctionServiceTests {
     private AuctionService _service;
     private InMemoryVehicleRepository _vehicleRepo;
     private InMemoryAuctionRepository _auctionRepo;
     private VehicleService _vehicleService;
 
     [SetUp]
-    public void Setup()
-    {
+    public void Setup() {
         _vehicleRepo = new InMemoryVehicleRepository();
         _auctionRepo = new InMemoryAuctionRepository();
         var logger = Substitute.For<ILogger<AuctionService>>();

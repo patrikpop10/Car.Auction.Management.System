@@ -39,4 +39,10 @@
     <ProjectReference Include="..\..\src\Infra\Infra.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Domain">
+      <HintPath>..\Car.Auction.Management.System\bin\Debug\net10.0\Domain.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

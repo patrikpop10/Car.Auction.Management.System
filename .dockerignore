@@ -1,0 +1,28 @@
+# Ignore node_modules and other dependencies
+node_modules
+**/bin
+**/obj
+
+# Ignore user-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Ignore build output
+/app/publish
+/app/build
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+*.swp
+
+# Ignore Docker-related files
+Dockerfile*
+.dockerignore
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.temp
