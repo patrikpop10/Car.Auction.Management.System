@@ -7,7 +7,7 @@ public static class MoneyExtensions
 {
     public static MoneyDto ToDto(this Money money)
     {
-        return new MoneyDto{Amount = money.Amount, Currency = money.CurrencyType.ToString()};
+        return new MoneyDto { Amount = money.Amount, Currency = money.CurrencyType.ToString() };
     }
     public static Money ToDomain(this MoneyDto moneyDto)
     {

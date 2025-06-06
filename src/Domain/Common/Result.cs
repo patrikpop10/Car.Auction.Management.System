@@ -27,7 +27,7 @@ public class Result
     public bool IsSuccess { get; private init; }
     public string? ErrorCode { get; private init; }
     public string? ErrorMessage { get; private init; }
-    
+
     public Problem? Problem { get; private init; }
 
     protected Result()

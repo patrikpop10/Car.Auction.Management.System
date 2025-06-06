@@ -17,7 +17,7 @@ public class VehicleService : IVehicleService
     private readonly ILogger<VehicleService> _logger;
 
     public VehicleService(
-        IVehicleRepository vehicleRepo, 
+        IVehicleRepository vehicleRepo,
         IAuctionRepository auctionRepository,
         ILogger<VehicleService> logger)
     {
@@ -34,16 +34,16 @@ public class VehicleService : IVehicleService
         }
         _logger.LogInformation("Adding vehicle: {VehicleId}, Type: {VehicleType}, Manufacturer: {Manufacturer}, Model: {Model}, Year: {Year}", vehicle.Id, vehicle.GetType().Name, vehicle.Manufacturer, vehicle.Model, vehicle.Year);
         await _vehicleRepo.Add(vehicle);
-        
+
         return Result.Success();
     }
 
     public async Task<IEnumerable<SearchVehicleResponse>> SearchVehicles(string? type = null, string? manufacturer = null, string? model = null, int? year = null)
     {
-        var vehicleDtos =  (await _vehicleRepo.Search(type, manufacturer, model, year))
+        var vehicleDtos = (await _vehicleRepo.Search(type, manufacturer, model, year))
             .Select(MapToDto);
         var activeVehicles = new List<SearchVehicleResponse>();
-        
+
         foreach (var v in vehicleDtos)
         {
             if (await IsAuctionActive(new VehicleId(v.Id)))
@@ -51,34 +51,42 @@ public class VehicleService : IVehicleService
         }
         return activeVehicles;
     }
-    
+
     private async Task<bool> IsAuctionActive(VehicleId vehicleId)
     {
         return await _auctionRepository.IsAuctionActive(vehicleId);
     }
-    
+
     private static SearchVehicleResponse MapToDto(Vehicle v)
     {
-        return v switch 
+        return v switch
         {
             Hatchback h => new SearchVehicleResponse
             {
-                Id = h.Id.Id, Vehicle = new VehicleDto { Type = "Hatchback", Manufacturer = h.Manufacturer, Model = h.Model, Year = h.Year, NumberOfDoors = h.NumberOfDoors }, StartingBid = h.StartingBid.ToDto(),
+                Id = h.Id.Id,
+                Vehicle = new VehicleDto { Type = "Hatchback", Manufacturer = h.Manufacturer, Model = h.Model, Year = h.Year, NumberOfDoors = h.NumberOfDoors },
+                StartingBid = h.StartingBid.ToDto(),
             },
             Sedan s => new SearchVehicleResponse
             {
-                Id = s.Id.Id, Vehicle = new VehicleDto {Type = "Sedan", Manufacturer = s.Manufacturer, Model = s.Model, Year = s.Year, NumberOfDoors = s.NumberOfDoors }, StartingBid = s.StartingBid.ToDto(),
+                Id = s.Id.Id,
+                Vehicle = new VehicleDto { Type = "Sedan", Manufacturer = s.Manufacturer, Model = s.Model, Year = s.Year, NumberOfDoors = s.NumberOfDoors },
+                StartingBid = s.StartingBid.ToDto(),
             },
             SUV suv => new SearchVehicleResponse
             {
-                Id = suv.Id.Id, Vehicle = new VehicleDto(){Type = "SUV", Manufacturer = suv.Manufacturer, Model = suv.Model, Year = suv.Year, NumberOfSeats = suv.NumberOfSeats }, StartingBid = suv.StartingBid.ToDto(),
+                Id = suv.Id.Id,
+                Vehicle = new VehicleDto() { Type = "SUV", Manufacturer = suv.Manufacturer, Model = suv.Model, Year = suv.Year, NumberOfSeats = suv.NumberOfSeats },
+                StartingBid = suv.StartingBid.ToDto(),
             },
             Truck t => new SearchVehicleResponse
             {
-                Id = t.Id.Id, Vehicle = new VehicleDto{Type = "Truck", Manufacturer = t.Manufacturer, Model = t.Model, Year = t.Year, LoadCapacity = t.LoadCapacity }, StartingBid = t.StartingBid.ToDto(),
+                Id = t.Id.Id,
+                Vehicle = new VehicleDto { Type = "Truck", Manufacturer = t.Manufacturer, Model = t.Model, Year = t.Year, LoadCapacity = t.LoadCapacity },
+                StartingBid = t.StartingBid.ToDto(),
             },
             _ => throw new NotImplementedException()
         };
     }
-    
+
 }

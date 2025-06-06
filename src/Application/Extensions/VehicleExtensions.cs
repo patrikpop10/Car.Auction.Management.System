@@ -5,7 +5,7 @@ namespace Application.Extensions;
 
 public static class VehicleExtensions
 {
-    
+
     public static VehicleDto ToDto(this Vehicle vehicle)
     {
         return new VehicleDto

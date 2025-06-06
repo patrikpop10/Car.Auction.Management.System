@@ -12,8 +12,8 @@ public static class AuctionsEndpoints
 {
     public static RouteGroupBuilder MapAuctionsEndpoints(this WebApplication application)
     {
-       var group = application.MapGroup("/auctions").WithTags("Auctions");
-       
+        var group = application.MapGroup("/auctions").WithTags("Auctions");
+
         group.MapPost("/start/{vehicleId:guid}", async (IAuctionService service, Guid vehicleId) =>
         {
             var startAuctionResult = await service.StartAuction(new VehicleId(vehicleId));
@@ -29,15 +29,15 @@ public static class AuctionsEndpoints
         group.MapPost("/bid/{vehicleId:guid}", async (IAuctionService service, IValidator<BidRequest> bidValidator, Guid vehicleId, BidRequest bid) =>
         {
             var validationResult = await bidValidator.ValidateAsync(bid);
-            if (!validationResult.IsValid) 
+            if (!validationResult.IsValid)
             {
                 return Results.ValidationProblem(validationResult.ToDictionary());
             }
-            
+
             var bidResult = await service.PlaceBid(bid, new VehicleId(vehicleId));
             return bidResult.ToApiResult();
         });
-        
+
         group.MapGet("/active/{vehicleId:guid}", (IAuctionMonitor monitor, Guid vehicleId, CancellationToken cancellationToken) =>
         {
             async IAsyncEnumerable<SseItem<AuctionMonitoringResponse>> GetActiveAuctions()
@@ -46,16 +46,16 @@ public static class AuctionsEndpoints
                 {
                     if (auction.Auction.VehicleId == vehicleId)
                     {
-                        yield return new SseItem<AuctionMonitoringResponse>(auction) 
+                        yield return new SseItem<AuctionMonitoringResponse>(auction)
                         {
                             ReconnectionInterval = TimeSpan.FromMinutes(1)
                         };
                     }
                 }
             }
-            
+
             return TypedResults.ServerSentEvents(GetActiveAuctions());
-            
+
         });
 
         return group;

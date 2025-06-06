@@ -22,7 +22,7 @@ namespace Infra.Repositories
 
         public Task<Auction> GetByVehicleId(VehicleId vehicleId)
         {
-            return Task.FromResult( _auctions.FirstOrDefault(a => a.VehicleId == vehicleId));
+            return Task.FromResult(_auctions.FirstOrDefault(a => a.VehicleId == vehicleId));
         }
 
         public Task<bool> CloseAuction(Auction auction)

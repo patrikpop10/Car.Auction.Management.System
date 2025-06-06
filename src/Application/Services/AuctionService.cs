@@ -30,7 +30,7 @@ public class AuctionService : IAuctionService
         _auctionChannelWriter = auctionChannelWriter;
         _logger = logger;
     }
-    
+
     //should be a start auction response not an auction
     public async Task<Result<StartAuctionResponse>> StartAuction(VehicleId vehicleId)
     {
@@ -64,12 +64,12 @@ public class AuctionService : IAuctionService
         if (!auction.IsActive)
             return Result<AuctionClosedResponse>.Failure(Problem.AuctionNotActive(auction.VehicleId));
 
-        var closedAuction =  auction.Close();
+        var closedAuction = auction.Close();
         if (!closedAuction.IsSuccess)
             return Result<AuctionClosedResponse>.Failure(closedAuction.Problem!);
 
         await _vehicleRepo.Remove(auction.VehicleId);
-        
+
         _logger.LogInformation("Auction closed for vehicle {VehicleId} with winner {Winner} and bid {WinningBid}", auction.VehicleId, closedAuction.Value!.Winner, closedAuction.Value.WinningBid);
 
         return Result<AuctionClosedResponse>.Success(new AuctionClosedResponse(
@@ -88,7 +88,7 @@ public class AuctionService : IAuctionService
 
         if (auction is null)
             return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a vehicle without an active auction", Problem.AuctionNotActive(vehicleId), vehicleId);
-        
+
 
         _logger.LogInformation("Placing bid for vehicle {VehicleId} by {Bidder}: {Money}", vehicleId, bidRequest.Bidder, bidRequest.Bid);
 
@@ -104,7 +104,7 @@ public class AuctionService : IAuctionService
     }
 
     private static bool VehicleExists(Vehicle? vehicle) => vehicle is not null;
-    
+
 
     private Result<T> LogAndReturnFailure<T>(string message, Problem problem, VehicleId vehicleId, string? bidder = null, Money? money = null)
     {

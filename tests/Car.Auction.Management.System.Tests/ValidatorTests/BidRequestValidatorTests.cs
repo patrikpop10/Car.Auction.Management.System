@@ -26,7 +26,7 @@ public class BidRequestValidatorTests
     [Test]
     public void Validate_WhenBidIsNull_ReturnsValidationError()
     {
-        var request = new BidRequest ("John Doe", null );
+        var request = new BidRequest("John Doe", null);
         var result = _validator.TestValidate(request);
         result.ShouldHaveValidationErrorFor(x => x.Bid);
     }
@@ -34,7 +34,7 @@ public class BidRequestValidatorTests
     [Test]
     public void Validate_WhenBidRequestIsValid_ReturnsNoValidationErrors()
     {
-        var request = new BidRequest( "John Doe",  new MoneyDto { Amount = 100, Currency = "USD" });
+        var request = new BidRequest("John Doe", new MoneyDto { Amount = 100, Currency = "USD" });
         var result = _validator.TestValidate(request);
         result.ShouldNotHaveAnyValidationErrors();
     }

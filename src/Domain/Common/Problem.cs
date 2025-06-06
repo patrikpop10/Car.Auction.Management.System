@@ -7,7 +7,7 @@ public record Problem
     public int Status { get; init; }
     public string? Title { get; init; }
     public string? ErrorMessage { get; init; }
-    
+
     public static Problem InvalidVehicleType()
     {
         return new Problem
@@ -17,9 +17,9 @@ public record Problem
             ErrorMessage = "The provided vehicle type is invalid."
         };
     }
-    
-    
-    
+
+
+
     public static Problem VehicleNotFound(VehicleId vehicleId)
     {
         return new Problem()
@@ -29,7 +29,7 @@ public record Problem
             ErrorMessage = $"The requested vehicle with Id {vehicleId} was not found."
         };
     }
-    
+
     public static Problem DuplicateVehicle(VehicleId vehicleId)
     {
         return new Problem()
@@ -39,7 +39,7 @@ public record Problem
             ErrorMessage = $"A vehicle with the ID {vehicleId.Id} already exists."
         };
     }
-    
+
     public static Problem AuctionAlreadyActive(VehicleId vehicleId)
     {
         return new Problem()
@@ -49,7 +49,7 @@ public record Problem
             ErrorMessage = $"An auction is already active for the vehicle with ID {vehicleId.Id}."
         };
     }
-    
+
     public static Problem AuctionNotActive(VehicleId vehicleId)
     {
         return new Problem
@@ -59,7 +59,7 @@ public record Problem
             ErrorMessage = $"No active auction found for the vehicle with ID {vehicleId.Id}."
         };
     }
-    
+
     public static Problem InvalidBidAmount()
     {
         return new Problem
@@ -69,7 +69,7 @@ public record Problem
             ErrorMessage = "The bid amount must be greater than the current highest bid."
         };
     }
-    
+
     public static Problem InternalServerError()
     {
         return new Problem

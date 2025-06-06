@@ -13,7 +13,8 @@ using NSubstitute;
 namespace Car.Auction.Management.System;
 
 [TestFixture]
-public class AuctionServiceTestsWithMock {
+public class AuctionServiceTestsWithMock
+{
     private AuctionService _service;
     private IVehicleRepository _vehicleRepo;
     private IAuctionRepository _auctionRepo;
@@ -23,7 +24,8 @@ public class AuctionServiceTestsWithMock {
     private ChannelWriter<AuctionMonitoringResponse> _channelWriter;
 
     [SetUp]
-    public void Setup() {
+    public void Setup()
+    {
         _vehicleRepo = Substitute.For<IVehicleRepository>();
         _auctionRepo = Substitute.For<IAuctionRepository>();
         _logger = Substitute.For<ILogger<AuctionService>>();
@@ -66,10 +68,10 @@ public class AuctionServiceTestsWithMock {
     public async Task SearchVehicles_ByTypeAndManufacturer_ReturnsCorrectResults()
     {
         var v2 = new Hatchback(new VehicleId(Guid.NewGuid()), "Honda", "Fit", 2023, new Money(3000, CurrencyType.USD), 5);
-        
+
         _vehicleRepo.Search("Hatchback", "Honda").Returns(new[] { v2 });
         _auctionRepo.IsAuctionActive(v2.Id).Returns(true);
-        
+
         var results = await _vehicleService.SearchVehicles(type: "Hatchback", manufacturer: "Honda");
 
         var vehicleRequests = results.ToList();
@@ -129,7 +131,7 @@ public class AuctionServiceTestsWithMock {
         _vehicleRepo.GetById(v.Id).Returns(v);
         _auctionRepo.GetActiveByVehicleId(v.Id).Returns(auction);
 
-        var bidDto1 = new BidRequest("Alice", new MoneyDto { Amount = 5000, Currency ="USD" });
+        var bidDto1 = new BidRequest("Alice", new MoneyDto { Amount = 5000, Currency = "USD" });
         var result = await _service.PlaceBid(bidDto1, v.Id);
 
         Assert.That(result.IsSuccess, Is.True);
@@ -147,7 +149,7 @@ public class AuctionServiceTestsWithMock {
         _vehicleRepo.GetById(v.Id).Returns(v);
         _auctionRepo.GetActiveByVehicleId(v.Id).Returns(auction);
 
-        var bidDto2 = new BidRequest("Bob", new MoneyDto { Amount = 5000, Currency = "USD"} );
+        var bidDto2 = new BidRequest("Bob", new MoneyDto { Amount = 5000, Currency = "USD" });
         var result = await _service.PlaceBid(bidDto2, v.Id);
 
         Assert.That(result.Problem!.Status, Is.EqualTo(400));
@@ -163,7 +165,7 @@ public class AuctionServiceTestsWithMock {
         _vehicleRepo.GetById(v.Id).Returns(v);
         _auctionRepo.GetActiveByVehicleId(v.Id).Returns((Domain.Entities.Auction.Auction)null!);
 
-        var bid = new BidRequest("Bob", new MoneyDto { Amount = 5000, Currency = "USD"} );
+        var bid = new BidRequest("Bob", new MoneyDto { Amount = 5000, Currency = "USD" });
 
         var result = await _service.PlaceBid(bid, v.Id);
 

@@ -20,6 +20,6 @@ public class AuctionMonitor : IAuctionMonitor
         {
             yield return await _channelReader.ReadAsync(cancellationToken);
         }
-        
+
     }
 }

@@ -7,7 +7,7 @@ namespace Car.Auction.Management.System.ValidatorTests;
 public class MoneyDtoValidatorTests
 {
     private MoneyDtoValidator _validator;
-    
+
     [OneTimeSetUp]
     public void Setup()
     {

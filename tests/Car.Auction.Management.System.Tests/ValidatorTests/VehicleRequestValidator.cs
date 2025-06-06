@@ -40,16 +40,20 @@ public class VehicleRequestValidatorTests
     [Test]
     public void Validate_WhenStartingBidIsNull_ReturnsValidationError()
     {
-        var request = new VehicleRequest { Id = Guid.NewGuid(), 
-            StartingBid = null, 
-            Vehicle = new VehicleDto {
-            Type = "Car",
-            Manufacturer = "Toyota",
-            Model = "Corolla",
-            Year = 2020,
-            NumberOfDoors = 4,
-            NumberOfSeats = 5,
-            LoadCapacity = 500 } 
+        var request = new VehicleRequest
+        {
+            Id = Guid.NewGuid(),
+            StartingBid = null,
+            Vehicle = new VehicleDto
+            {
+                Type = "Car",
+                Manufacturer = "Toyota",
+                Model = "Corolla",
+                Year = 2020,
+                NumberOfDoors = 4,
+                NumberOfSeats = 5,
+                LoadCapacity = 500
+            }
         };
         var result = _validator.TestValidate(request);
         result.ShouldHaveValidationErrorFor(x => x.StartingBid);
@@ -72,7 +76,7 @@ public class VehicleRequestValidatorTests
                 NumberOfSeats = 5,
                 LoadCapacity = 500
             }
-        
+
         };
         var result = _validator.TestValidate(request);
         result.ShouldNotHaveAnyValidationErrors();
