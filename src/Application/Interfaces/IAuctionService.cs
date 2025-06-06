@@ -1,6 +1,7 @@
 using Application.DTOs;
 using Application.DTOs.Requests;
-using Application.DTOs.Responses;
+using Application.Models.Requests;
+using Application.Models.Responses;
 using Domain;
 using Domain.Common;
 using Domain.Entities;

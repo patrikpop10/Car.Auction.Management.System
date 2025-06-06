@@ -1,6 +1,6 @@
 using Application.DTOs;
-using Application.DTOs.Responses;
 using Application.Interfaces;
+using Application.Models.Responses;
 using Domain.Entities;
 using Domain.Entities.Auction;
 using Domain.Entities.Vehicles;

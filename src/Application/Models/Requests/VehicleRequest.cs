@@ -1,3 +1,5 @@
+using Application.Models.Dtos;
+
 namespace Application.DTOs.Requests;
 
 public record VehicleRequest

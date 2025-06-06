@@ -1,5 +1,5 @@
 ﻿
-namespace Application.DTOs;
+namespace Application.Models.Dtos;
 
 public sealed record MoneyDto
 {

@@ -1,6 +1,7 @@
 using System.Threading.Channels;
 using Application.DTOs;
 using Application.Interfaces;
+using Application.Models.Dtos;
 using Application.Services;
 using Domain.Entities;
 using Domain.Entities.Auction;

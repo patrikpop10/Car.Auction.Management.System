@@ -1,9 +1,10 @@
 using System.Threading.Channels;
 using Application.DTOs;
 using Application.DTOs.Requests;
-using Application.DTOs.Responses;
 using Application.Extensions;
 using Application.Interfaces;
+using Application.Models.Requests;
+using Application.Models.Responses;
 using Domain.Common;
 using Domain.Entities;
 using Domain.Entities.Auction;

@@ -1,6 +1,7 @@
 using Application.DTOs;
 using Application.DTOs.Requests;
-using Application.DTOs.Responses;
+using Application.Models.Dtos;
+using Application.Models.Requests;
 using Domain.Entities.Auction;
 using Domain.Entities.Vehicles;
 

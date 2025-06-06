@@ -5,6 +5,8 @@ using System.Threading.Channels;
 using Api.Endpoints;
 using Application.DTOs;
 using Application.DTOs.Requests;
+using Application.Models.Dtos;
+using Application.Models.Requests;
 using Application.Services;
 using FluentAssertions;
 using Infra.Repositories;

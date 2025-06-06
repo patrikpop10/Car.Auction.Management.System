@@ -1,4 +1,4 @@
-namespace Application.DTOs;
+namespace Application.Models.Dtos;
 
 public record CarDto
 {

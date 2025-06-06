@@ -1,5 +1,5 @@
-using Domain.Entities;
+using Application.Models.Dtos;
 
-namespace Application.DTOs.Responses;
+namespace Application.Models.Responses;
 
 public record BidResponse(VehicleResponse Vehicle, string Bidder, MoneyDto Amount);

@@ -1,4 +1,6 @@
 using Application.DTOs;
+using Application.Models.Dtos;
+using Application.Models.Responses;
 using Domain.Entities.Vehicles;
 
 namespace Application.Extensions;

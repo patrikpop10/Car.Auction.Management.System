@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
 using Application.DTOs.Requests;
 using Application.Extensions;
+using Application.Models.Dtos;
 using Domain;
 using Domain.Common;
 using Domain.Entities.Vehicles;

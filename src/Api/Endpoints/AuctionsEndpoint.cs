@@ -2,6 +2,7 @@
 using Application.DTOs.Requests;
 using Application.Extensions;
 using Application.Interfaces;
+using Application.Models.Requests;
 using Domain.Entities.Vehicles;
 
 namespace Api.Endpoints;
