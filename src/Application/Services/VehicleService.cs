@@ -2,6 +2,7 @@
 using Application.Interfaces;
 using Application.Models.Dtos;
 using Application.Models.Requests;
+using Application.Models.Responses;
 using Domain.Common;
 using Domain.Entities.Vehicles;
 using Domain.Repositories;
@@ -37,11 +38,11 @@ public class VehicleService : IVehicleService
         return Result.Success();
     }
 
-    public async Task<IEnumerable<VehicleRequest>> SearchVehicles(string? type = null, string? manufacturer = null, string? model = null, int? year = null)
+    public async Task<IEnumerable<SearchVehicleResponse>> SearchVehicles(string? type = null, string? manufacturer = null, string? model = null, int? year = null)
     {
         var vehicleDtos =  (await _vehicleRepo.Search(type, manufacturer, model, year))
             .Select(MapToDto);
-        var activeVehicles = new List<VehicleRequest>();
+        var activeVehicles = new List<SearchVehicleResponse>();
         
         foreach (var v in vehicleDtos)
         {
@@ -56,23 +57,23 @@ public class VehicleService : IVehicleService
         return await _auctionRepository.IsAuctionActive(vehicleId);
     }
     
-    private static VehicleRequest MapToDto(Vehicle v)
+    private static SearchVehicleResponse MapToDto(Vehicle v)
     {
         return v switch 
         {
-            Hatchback h => new VehicleRequest
+            Hatchback h => new SearchVehicleResponse
             {
                 Id = h.Id.Id, Vehicle = new VehicleDto { Type = "Hatchback", Manufacturer = h.Manufacturer, Model = h.Model, Year = h.Year, NumberOfDoors = h.NumberOfDoors }, StartingBid = h.StartingBid.ToDto(),
             },
-            Sedan s => new VehicleRequest
+            Sedan s => new SearchVehicleResponse
             {
                 Id = s.Id.Id, Vehicle = new VehicleDto {Type = "Sedan", Manufacturer = s.Manufacturer, Model = s.Model, Year = s.Year, NumberOfDoors = s.NumberOfDoors }, StartingBid = s.StartingBid.ToDto(),
             },
-            SUV suv => new VehicleRequest
+            SUV suv => new SearchVehicleResponse
             {
                 Id = suv.Id.Id, Vehicle = new VehicleDto(){Type = "SUV", Manufacturer = suv.Manufacturer, Model = suv.Model, Year = suv.Year, NumberOfSeats = suv.NumberOfSeats }, StartingBid = suv.StartingBid.ToDto(),
             },
-            Truck t => new VehicleRequest
+            Truck t => new SearchVehicleResponse
             {
                 Id = t.Id.Id, Vehicle = new VehicleDto{Type = "Truck", Manufacturer = t.Manufacturer, Model = t.Model, Year = t.Year, LoadCapacity = t.LoadCapacity }, StartingBid = t.StartingBid.ToDto(),
             },

@@ -1,4 +1,5 @@
 using Application.Models.Requests;
+using Application.Models.Responses;
 using Domain.Common;
 using Domain.Entities.Vehicles;
 
@@ -8,5 +9,5 @@ public interface IVehicleService
 {
     Task<Result> AddVehicle(Vehicle vehicle);
 
-    Task<IEnumerable<VehicleRequest>> SearchVehicles(string? type = null, string? manufacturer = null, string? model = null, int? year = null);
+    Task<IEnumerable<SearchVehicleResponse>> SearchVehicles(string? type = null, string? manufacturer = null, string? model = null, int? year = null);
 }
