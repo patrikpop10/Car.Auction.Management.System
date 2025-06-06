@@ -1,4 +1,5 @@
 using Application.DTOs;
+using Application.DTOs.Requests;
 using Application.DTOs.Responses;
 using Domain;
 using Domain.Common;
@@ -13,6 +14,6 @@ public interface IAuctionService
 {
     Task<Result<StartAuctionResponse>> StartAuction(VehicleId vehicleId);
     Task<Result<AuctionClosedResponse>> CloseAuction(VehicleId vehicleId);
-    Task<Result<BidResponse>> PlaceBid(BidDto bidDto, VehicleId vehicleId); 
+    Task<Result<BidResponse>> PlaceBid(BidRequest bidRequest, VehicleId vehicleId); 
     
 }

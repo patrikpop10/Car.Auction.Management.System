@@ -12,7 +12,7 @@ public static class BidExtensions
    {
       return new BidDto { Bidder = bid.Bidder, Amount = bid.Amount };
    }
-   public static Bid DtoToDomain(this BidDto bid)
+   public static Bid RequestToDomain(this BidRequest bid)
       => new Bid(bid.Bidder, bid.Amount.ToDomain());
    
    public static BidDto ToDto(this Bid bid)

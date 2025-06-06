@@ -77,7 +77,7 @@ public class AuctionService : IAuctionService
             closedAuction.Value.WinningBid.ToDto()));
     }
 
-    public async Task<Result<BidResponse>> PlaceBid(BidDto bidDto, VehicleId vehicleId)
+    public async Task<Result<BidResponse>> PlaceBid(BidRequest bidRequest, VehicleId vehicleId)
     {
         var auction = await _auctionRepo.GetActiveByVehicleId(vehicleId);
         var vehicle = await _vehicleRepo.GetById(vehicleId);
@@ -89,13 +89,13 @@ public class AuctionService : IAuctionService
             return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a vehicle without an active auction", Problem.AuctionNotActive(vehicleId), vehicleId);
         
 
-        _logger.LogInformation("Placing bid for vehicle {VehicleId} by {Bidder}: {Money}", vehicleId, bidDto.Bidder, bidDto.Amount);
+        _logger.LogInformation("Placing bid for vehicle {VehicleId} by {Bidder}: {Money}", vehicleId, bidRequest.Bidder, bidRequest.Amount);
 
-        var bid = bidDto.DtoToDomain();
+        var bid = bidRequest.RequestToDomain();
         var bidResult = auction.PlaceBid(bid, vehicle!);
         if (!bidResult.IsSuccess)
         {
-            return LogAndReturnFailure<BidResponse>("Failed to place bid", bidResult.Problem!, vehicleId, bidDto.Bidder, bidDto.Amount.ToDomain());
+            return LogAndReturnFailure<BidResponse>("Failed to place bid", bidResult.Problem!, vehicleId, bidRequest.Bidder, bidRequest.Amount.ToDomain());
         }
 
         await _auctionChannelWriter.WriteAsync(auction.ToMonitoringResponse(vehicle, bid));

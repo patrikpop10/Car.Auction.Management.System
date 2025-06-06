@@ -26,7 +26,7 @@ public static class AuctionsEndpoints
 
         group.MapPost("/bid/{vehicleId:guid}", async (IAuctionService service, Guid vehicleId, BidRequest bid) =>
         {
-            var bidResult = await service.PlaceBid(bid.RequestToDto(), new VehicleId(vehicleId));
+            var bidResult = await service.PlaceBid(bid, new VehicleId(vehicleId));
             return bidResult.ToApiResult();
         });
         
