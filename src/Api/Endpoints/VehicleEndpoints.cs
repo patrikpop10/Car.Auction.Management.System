@@ -1,7 +1,6 @@
-﻿using Application.DTOs;
-using Application.DTOs.Requests;
-using Application.Extensions;
-using Application.Services;
+﻿using Application.Extensions;
+using Application.Interfaces;
+using Application.Models.Requests;
 using Domain.Entities.Vehicles;
 
 namespace Api.Endpoints;
@@ -14,12 +13,12 @@ public static class VehiclesEndpoints
         
         group.MapPost("/", async (IVehicleService service, VehicleRequest dto) =>
         {
-            Vehicle vehicle = dto.Car.Type switch
+            Vehicle vehicle = dto.Vehicle.Type switch
             {
-                "Hatchback" => new Hatchback(new VehicleId(dto.Id), dto.Car.Manufacturer, dto.Car.Model, dto.Car.Year, dto.StartingBid.ToDomain(), dto.Car.NumberOfDoors ?? 5),
-                "Sedan"     => new Sedan(new VehicleId(dto.Id), dto.Car.Manufacturer, dto.Car.Model, dto.Car.Year, dto.StartingBid.ToDomain(), dto.Car.NumberOfDoors ?? 4),
-                "SUV"       => new SUV(new VehicleId(dto.Id), dto.Car.Manufacturer, dto.Car.Model, dto.Car.Year, dto.StartingBid.ToDomain(), dto.Car.NumberOfSeats ?? 5),
-                "Truck"     => new Truck(new VehicleId(dto.Id), dto.Car.Manufacturer, dto.Car.Model, dto.Car.Year, dto.StartingBid.ToDomain(), dto.Car.LoadCapacity ?? 1.0),
+                "Hatchback" => new Hatchback(new VehicleId(dto.Id), dto.Vehicle.Manufacturer, dto.Vehicle.Model, dto.Vehicle.Year, dto.StartingBid.ToDomain(), dto.Vehicle.NumberOfDoors ?? 5),
+                "Sedan"     => new Sedan(new VehicleId(dto.Id), dto.Vehicle.Manufacturer, dto.Vehicle.Model, dto.Vehicle.Year, dto.StartingBid.ToDomain(), dto.Vehicle.NumberOfDoors ?? 4),
+                "SUV"       => new SUV(new VehicleId(dto.Id), dto.Vehicle.Manufacturer, dto.Vehicle.Model, dto.Vehicle.Year, dto.StartingBid.ToDomain(), dto.Vehicle.NumberOfSeats ?? 5),
+                "Truck"     => new Truck(new VehicleId(dto.Id), dto.Vehicle.Manufacturer, dto.Vehicle.Model, dto.Vehicle.Year, dto.StartingBid.ToDomain(), dto.Vehicle.LoadCapacity ?? 1.0),
                 _           => throw new ArgumentException("Unknown vehicle type")
             };
 

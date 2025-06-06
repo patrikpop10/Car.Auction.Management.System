@@ -1,6 +1,7 @@
 using System.Threading.Channels;
-using Application.DTOs;
-using Application.Interfaces;
+using Application.Models.Dtos;
+using Application.Models.Requests;
+using Application.Models.Responses;
 using Application.Services;
 using Domain.Entities;
 using Domain.Entities.Auction;
@@ -73,7 +74,7 @@ public class AuctionServiceTestsWithMock {
 
         var vehicleRequests = results.ToList();
         Assert.That(vehicleRequests, Has.Count.EqualTo(1));
-        Assert.That(vehicleRequests.First().Car.Model, Is.EqualTo("Fit"));
+        Assert.That(vehicleRequests.First().Vehicle.Model, Is.EqualTo("Fit"));
     }
 
     [Test]
@@ -128,16 +129,7 @@ public class AuctionServiceTestsWithMock {
         _vehicleRepo.GetById(v.Id).Returns(v);
         _auctionRepo.GetActiveByVehicleId(v.Id).Returns(auction);
 
-        var bidDto1 = new BidDto
-        {
-            Bidder = "Alice",
-            Amount = new MoneyDto
-            {
-                Amount = 5000,
-                Currency = "USD"
-            }
-        };
-
+        var bidDto1 = new BidRequest("Alice", new MoneyDto { Amount = 5000, Currency ="USD" });
         var result = await _service.PlaceBid(bidDto1, v.Id);
 
         Assert.That(result.IsSuccess, Is.True);
@@ -155,16 +147,7 @@ public class AuctionServiceTestsWithMock {
         _vehicleRepo.GetById(v.Id).Returns(v);
         _auctionRepo.GetActiveByVehicleId(v.Id).Returns(auction);
 
-        var bidDto2 = new BidDto
-        {
-            Bidder = "Bob",
-            Amount = new MoneyDto
-            {
-                Amount = 4900,
-                Currency = "USD"
-            }
-        };
-
+        var bidDto2 = new BidRequest("Bob", new MoneyDto { Amount = 5000, Currency = "USD"} );
         var result = await _service.PlaceBid(bidDto2, v.Id);
 
         Assert.That(result.Problem!.Status, Is.EqualTo(400));
@@ -180,15 +163,7 @@ public class AuctionServiceTestsWithMock {
         _vehicleRepo.GetById(v.Id).Returns(v);
         _auctionRepo.GetActiveByVehicleId(v.Id).Returns((Domain.Entities.Auction.Auction)null!);
 
-        var bid = new BidDto
-        {
-            Bidder = "Bob",
-            Amount = new MoneyDto
-            {
-                Amount = 5000,
-                Currency = "USD"
-            }
-        };
+        var bid = new BidRequest("Bob", new MoneyDto { Amount = 5000, Currency = "USD"} );
 
         var result = await _service.PlaceBid(bid, v.Id);
 

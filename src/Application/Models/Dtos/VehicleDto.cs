@@ -1,6 +1,6 @@
-namespace Application.DTOs;
+namespace Application.Models.Dtos;
 
-public record CarDto
+public record VehicleDto
 {
     public required string Type { get; init; } 
     public required string Manufacturer { get; init; } 

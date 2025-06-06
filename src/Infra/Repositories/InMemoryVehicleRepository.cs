@@ -26,4 +26,9 @@ public class InMemoryVehicleRepository : IVehicleRepository
     }
 
     public Task<bool> Exists(VehicleId id) => Task.FromResult(_vehicles.ContainsKey(id));
+    public Task Remove(VehicleId id)
+    {
+        _vehicles.Remove(id);
+        return Task.CompletedTask;
+    }
 }

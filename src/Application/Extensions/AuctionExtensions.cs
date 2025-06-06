@@ -1,6 +1,5 @@
-using Application.DTOs;
-using Application.DTOs.Responses;
 using Application.Interfaces;
+using Application.Models.Responses;
 using Domain.Entities;
 using Domain.Entities.Auction;
 using Domain.Entities.Vehicles;
@@ -15,7 +14,7 @@ public static class AuctionExtensions
             vehicle.StartingBid.ToDto(),
             auction.StartedAt,
             auction.VehicleId.Id,
-            vehicle.ToResponse());
+            vehicle.ToDto());
     
     
     public static AuctionClosed Close(this Auction auction, string winner, Money winningBid) 

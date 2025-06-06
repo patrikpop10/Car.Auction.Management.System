@@ -1,22 +1,14 @@
-using Application.DTOs;
+using Application.Models.Dtos;
 using Domain.Entities.Vehicles;
 
 namespace Application.Extensions;
 
 public static class VehicleExtensions
 {
-    public static VehicleResponse ToResponse(this Vehicle vehicle)
-    {
-        return new VehicleResponse(
-            vehicle.Id.Id,
-            vehicle.Manufacturer,
-            vehicle.Model,
-            vehicle.Year);
-    }
     
-    public static CarDto ToDto(this Vehicle vehicle)
+    public static VehicleDto ToDto(this Vehicle vehicle)
     {
-        return new CarDto
+        return new VehicleDto
         {
             Manufacturer = vehicle.Manufacturer,
             Model = vehicle.Model,

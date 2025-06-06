@@ -1,4 +1,4 @@
-using Domain.Entities.Auction;
+using Application.Models.Responses;
 
 namespace Application.Interfaces;
 
