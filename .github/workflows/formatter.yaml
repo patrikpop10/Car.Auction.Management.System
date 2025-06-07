@@ -21,4 +21,4 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Run formatter
-        run: dotnet format --no-restore --verify-no-changes Car.Auction.Management.sln
+        run: dotnet format --no-restore --verify-no-changes Car.Auction.Management.System.sln
