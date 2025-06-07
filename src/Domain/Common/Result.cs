@@ -26,9 +26,7 @@ public class Result {
 
     public Problem? Problem { get; private init; }
 
-    protected Result() {
-        IsSuccess = true;
-    }
+    private Result() => IsSuccess = true;
     public static Result Success() => new();
     public static Result Failure(Problem problem) => new Result {
         IsSuccess = false,

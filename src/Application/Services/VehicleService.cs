@@ -22,7 +22,13 @@ public class VehicleService : IVehicleService {
         _logger = logger;
     }
     public async Task<Result> AddVehicle(Vehicle vehicle) {
-        if (await _vehicleRepo.Exists(vehicle.Id)) {
+        var existsResult = await _vehicleRepo.Exists(vehicle.Id);
+        if (!existsResult.IsSuccess) {
+            _logger.LogWarning("Error checking if vehicle exists: {ErrorMessage}", existsResult.Problem?.ErrorMessage);
+            return Result.Failure(Problem.InternalServerError());
+        }
+        var exists = existsResult.Value;
+        if (exists) {
             _logger.LogWarning("Attempted to add a vehicle that already exists: {VehicleId}", vehicle.Id);
             return Result.Failure(Problem.DuplicateVehicle(vehicle.Id));
         }
@@ -33,16 +39,28 @@ public class VehicleService : IVehicleService {
     }
 
     public async Task<IEnumerable<SearchVehicleResponse>> SearchVehicles(string? type = null, string? manufacturer = null, string? model = null, int? year = null) {
-        var vehicleDtos = (await _vehicleRepo.Search(type, manufacturer, model, year))
-            .Select(v => v.DomainToResponse());
+        var vehicleDtosResult = await _vehicleRepo.Search(type, manufacturer, model, year);
+
+        if (!vehicleDtosResult.IsSuccess) {
+            _logger.LogWarning("Error searching vehicles: {ErrorMessage}", vehicleDtosResult.Problem?.ErrorMessage);
+            return [];
+        }
+
         var activeVehicles = new List<SearchVehicleResponse>();
 
-        foreach (var v in vehicleDtos) {
+        foreach (var v in vehicleDtosResult.Value!.Select(x => x.DomainToResponse())) {
             if (await IsAuctionActive(new VehicleId(v.Id)))
                 activeVehicles.Add(v);
         }
         return activeVehicles;
     }
 
-    private async Task<bool> IsAuctionActive(VehicleId vehicleId) => await _auctionRepository.IsAuctionActive(vehicleId);
+    private async Task<bool> IsAuctionActive(VehicleId vehicleId) {
+        var result = await _auctionRepository.IsAuctionForVehicleActive(vehicleId);
+        if (!result.IsSuccess) {
+            _logger.LogWarning("Error checking auction status for vehicle {VehicleId}: {ErrorMessage}", vehicleId, result.Problem?.ErrorMessage);
+            return false;
+        }
+        return result.Value;
+    }
 }

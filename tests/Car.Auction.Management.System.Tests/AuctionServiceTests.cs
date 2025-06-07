@@ -3,6 +3,7 @@ using Application.Models.Dtos;
 using Application.Models.Requests;
 using Application.Models.Responses;
 using Application.Services;
+using Domain.Common;
 using Domain.Entities;
 using Domain.Entities.Vehicles;
 using Infra.Repositories;
@@ -32,7 +33,7 @@ public class AuctionServiceTests {
     public async Task AddVehicle_ShouldAddSuccessfully() {
         var vehicle = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Corolla", 2022, new Money(5000, CurrencyType.USD), 4);
         var x = await _vehicleService.AddVehicle(vehicle);
-        Assert.That(await _vehicleRepo.Exists(vehicle.Id), Is.True);
+        Assert.That((await _vehicleRepo.Exists(vehicle.Id)).IsSuccess, Is.True);
     }
 
     [Test]
@@ -47,7 +48,7 @@ public class AuctionServiceTests {
         Assert.That(result.Problem.Status, Is.EqualTo(409));
         Assert.That(result.Problem.Title, Is.EqualTo("DuplicateVehicle"));
         Assert.That(result.Problem.ErrorMessage, Is.EqualTo($"A vehicle with the ID {id.Id} already exists."));
-        Assert.That(await _vehicleRepo.Exists(id), Is.True);
+        Assert.That((await _vehicleRepo.Exists(id)).IsSuccess, Is.True);
     }
 
     [Test]
@@ -71,7 +72,7 @@ public class AuctionServiceTests {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
         await _vehicleService.AddVehicle(v);
         await _service.StartAuction(v.Id);
-        Assert.That(await _auctionRepo.IsAuctionActive(v.Id), Is.True);
+        Assert.That((await _auctionRepo.IsAuctionForVehicleActive(v.Id)).Value, Is.True);
     }
 
     [Test]
@@ -111,8 +112,8 @@ public class AuctionServiceTests {
         await _service.PlaceBid(bidDto2, v.Id);
         var auction = await _auctionRepo.GetActiveByVehicleId(v.Id);
 
-        Assert.That(auction.Bids.Count, Is.EqualTo(2));
-        Assert.That(auction.Bids.Last().Bidder, Is.EqualTo("Bob"));
+        Assert.That(auction.Value.Bids.Count, Is.EqualTo(2));
+        Assert.That(auction.Value.Bids.Last().Bidder, Is.EqualTo("Bob"));
     }
 
     [Test]

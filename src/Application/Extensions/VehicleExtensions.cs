@@ -35,7 +35,7 @@ public static class VehicleExtensions {
         },
         SUV suv => new SearchVehicleResponse {
             Id = suv.Id.Id,
-            Vehicle = new VehicleDto() { Type = nameof(SUV), Manufacturer = suv.Manufacturer, Model = suv.Model, Year = suv.Year, NumberOfSeats = suv.NumberOfSeats },
+            Vehicle = new VehicleDto { Type = nameof(SUV), Manufacturer = suv.Manufacturer, Model = suv.Model, Year = suv.Year, NumberOfSeats = suv.NumberOfSeats },
             StartingBid = suv.StartingBid.ToDto(),
         },
         Truck t => new SearchVehicleResponse {

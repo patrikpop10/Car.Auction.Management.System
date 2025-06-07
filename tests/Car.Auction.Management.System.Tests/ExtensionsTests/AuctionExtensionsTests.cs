@@ -27,6 +27,7 @@ public class AuctionExtensionsTests {
         response.StartingBid.Currency.Should().Be(vehicle.StartingBid.CurrencyType.ToString());
         response.AuctionId.Should().Be(id.Id);
         response.StartTime.Should().Be(auction.StartedAt);
+        response.AuctionId.Should().NotBeEmpty();
 
     }
 
@@ -47,5 +48,6 @@ public class AuctionExtensionsTests {
         closed.Winner.Should().Be("John");
         closed.WinningBid.Amount.Should().Be(winningBid.Amount);
         closed.WinningBid.CurrencyType.Should().Be(winningBid.CurrencyType);
+        closed.AuctionId.Should().Be(auction.Id.Id);
     }
 }

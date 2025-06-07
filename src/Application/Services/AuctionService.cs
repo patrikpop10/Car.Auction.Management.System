@@ -31,33 +31,38 @@ public class AuctionService : IAuctionService {
 
     //should be a start auction response not an auction
     public async Task<Result<StartAuctionResponse>> StartAuction(VehicleId vehicleId) {
-        var vehicle = await _vehicleRepo.GetById(vehicleId);
-        if (!VehicleExists(vehicle))
-            return LogAndReturnFailure<StartAuctionResponse>("Attempted to start an auction for a non-existent vehicle", Problem.VehicleNotFound(vehicleId), vehicleId);
+        var vehicleResult = await _vehicleRepo.GetById(vehicleId);
 
-        if (await _auctionRepo.IsAuctionActive(vehicleId))
-            return LogAndReturnFailure<StartAuctionResponse>("Attempted to start an auction for a vehicle with an active auction", Problem.AuctionAlreadyActive(vehicleId), vehicleId);
+        if (!vehicleResult.IsSuccess) {
+            return LogAndReturnFailure<StartAuctionResponse>("Attempted to start an auction for a vehicle that does not exist", vehicleResult.Problem!, vehicleId);
+        }
+
+        var isAuctionActiveResult = await _auctionRepo.IsAuctionForVehicleActive(vehicleId);
+        if (!isAuctionActiveResult.IsSuccess) {
+            return LogAndReturnFailure<StartAuctionResponse>("Issue while checking if auction is valid", isAuctionActiveResult.Problem!, vehicleId);
+        }
+        if (isAuctionActiveResult.Value) {
+            return LogAndReturnFailure<StartAuctionResponse>("Attempted to start an auction for a vehicle with an active auction", Problem.AuctionForVehicleAlreadyActive(vehicleId), vehicleId);
+        }
 
         _logger.LogInformation("Starting auction for vehicle: {VehicleId}", vehicleId);
-        var auction = new Auction(vehicleId);
-        await _auctionRepo.Add(auction);
-        return Result<StartAuctionResponse>.Success(auction.ToStartAuctionResponse(vehicle!));
+        var createdAuction = new Auction(vehicleId);
+        var addResult = await _auctionRepo.Add(createdAuction);
+        return !addResult.IsSuccess ? LogAndReturnFailure<StartAuctionResponse>("Failed to add auction to repository", addResult.Problem!, vehicleId) : Result<StartAuctionResponse>.Success(createdAuction.ToStartAuctionResponse(vehicleResult.Value!));
     }
 
     public async Task<Result<AuctionClosedResponse>> CloseAuction(VehicleId vehicleId) {
-        var auction = await _auctionRepo.GetActiveByVehicleId(vehicleId);
-        if (auction is null)
-            return LogAndReturnFailure<AuctionClosedResponse>("Attempted to close an auction for a vehicle without an active auction", Problem.AuctionNotActive(vehicleId), vehicleId);
+        var auctionResult = await _auctionRepo.GetActiveByVehicleId(vehicleId);
+        if (!auctionResult.IsSuccess)
+            return LogAndReturnFailure<AuctionClosedResponse>("Attempted to close an auction for a vehicle without an active auction", auctionResult.Problem!, vehicleId);
 
         _logger.LogInformation("Closing auction for vehicle: {VehicleId}", vehicleId);
-        var auctionClosed = CloseAuction(auction);
-        return await auctionClosed;
-
+        return await CloseAuction(auctionResult.Value!);
     }
 
     private async Task<Result<AuctionClosedResponse>> CloseAuction(Auction auction) {
         if (!auction.IsActive)
-            return Result<AuctionClosedResponse>.Failure(Problem.AuctionNotActive(auction.VehicleId));
+            return Result<AuctionClosedResponse>.Failure(Problem.AuctionForVehicleNotActive(auction.VehicleId));
 
         var closedAuction = auction.Close();
         if (!closedAuction.IsSuccess)
@@ -74,17 +79,22 @@ public class AuctionService : IAuctionService {
     }
 
     public async Task<Result<BidResponse>> PlaceBid(BidRequest bidRequest, VehicleId vehicleId) {
-        var auction = await _auctionRepo.GetActiveByVehicleId(vehicleId);
-        var vehicle = await _vehicleRepo.GetById(vehicleId);
+        var auctionResult = await _auctionRepo.GetActiveByVehicleId(vehicleId);
+        var vehicleResult = await _vehicleRepo.GetById(vehicleId);
 
-        if (!VehicleExists(vehicle))
-            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a non-existent vehicle", Problem.VehicleNotFound(vehicleId), vehicleId);
-
-        if (auction is null) {
-            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a vehicle without an active auction", Problem.AuctionNotActive(vehicleId), vehicleId);
+        if (!auctionResult.IsSuccess) {
+            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a vehicle without an active auction", auctionResult.Problem!, vehicleId);
         }
+        var auction = auctionResult.Value!;
+
+        if (!vehicleResult.IsSuccess) {
+            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a vehicle that does not exist", vehicleResult.Problem!, vehicleId, bidRequest.Bidder, bidRequest.Amount.ToDomain());
+        }
+
+        var vehicle = vehicleResult.Value!;
+
         if (!auction.IsActive) {
-            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a closed auction", Problem.Closed(vehicleId), vehicleId);
+            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a closed auction", Problem.Closed(auction.Id), vehicleId);
         }
 
         _logger.LogInformation("Placing bid for vehicle {VehicleId} by {Bidder}: {Money}", vehicleId, bidRequest.Bidder, bidRequest.Amount);
@@ -96,10 +106,8 @@ public class AuctionService : IAuctionService {
         }
 
         await _auctionChannelWriter.WriteAsync(auction.ToMonitoringResponse(vehicle!, bid));
-        return Result<BidResponse>.Success(new BidResponse(vehicle!.ToDto(), bid.Bidder, bid.Value.ToDto()));
+        return Result<BidResponse>.Success(new BidResponse(vehicle.ToDto(), bid.Bidder, bid.Value.ToDto()));
     }
-
-    private static bool VehicleExists(Vehicle? vehicle) => vehicle is not null;
 
     private Result<T> LogAndReturnFailure<T>(string message, Problem problem, VehicleId vehicleId, string? bidder = null, Money? money = null) {
         if (bidder is not null && money is not null)
