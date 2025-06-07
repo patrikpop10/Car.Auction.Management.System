@@ -31,9 +31,11 @@ public class AuctionService : IAuctionService {
 
     //should be a start auction response not an auction
     public async Task<Result<StartAuctionResponse>> StartAuction(VehicleId vehicleId) {
-        var vehicle = await _vehicleRepo.GetById(vehicleId);
-        if (!VehicleExists(vehicle))
-            return LogAndReturnFailure<StartAuctionResponse>("Attempted to start an auction for a non-existent vehicle", Problem.VehicleNotFound(vehicleId), vehicleId);
+        var vehicleResult = await _vehicleRepo.GetById(vehicleId);
+
+        if (!vehicleResult.IsSuccess) {
+            return LogAndReturnFailure<StartAuctionResponse>("Attempted to start an auction for a vehicle that does not exist", vehicleResult.Problem!, vehicleId);
+        }
 
         var isAuctionActiveResult = await _auctionRepo.IsAuctionForVehicleActive(vehicleId);
         if (!isAuctionActiveResult.IsSuccess) {
@@ -46,7 +48,7 @@ public class AuctionService : IAuctionService {
         _logger.LogInformation("Starting auction for vehicle: {VehicleId}", vehicleId);
         var createdAuction = new Auction(vehicleId);
         var addResult = await _auctionRepo.Add(createdAuction);
-        return !addResult.IsSuccess ? LogAndReturnFailure<StartAuctionResponse>("Failed to add auction to repository", addResult.Problem!, vehicleId) : Result<StartAuctionResponse>.Success(createdAuction.ToStartAuctionResponse(vehicle!));
+        return !addResult.IsSuccess ? LogAndReturnFailure<StartAuctionResponse>("Failed to add auction to repository", addResult.Problem!, vehicleId) : Result<StartAuctionResponse>.Success(createdAuction.ToStartAuctionResponse(vehicleResult.Value!));
     }
 
     public async Task<Result<AuctionClosedResponse>> CloseAuction(VehicleId vehicleId) {
@@ -78,14 +80,18 @@ public class AuctionService : IAuctionService {
 
     public async Task<Result<BidResponse>> PlaceBid(BidRequest bidRequest, VehicleId vehicleId) {
         var auctionResult = await _auctionRepo.GetActiveByVehicleId(vehicleId);
-        var vehicle = await _vehicleRepo.GetById(vehicleId);
+        var vehicleResult = await _vehicleRepo.GetById(vehicleId);
 
         if (!auctionResult.IsSuccess) {
             return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a vehicle without an active auction", auctionResult.Problem! , vehicleId);
         }
         var auction = auctionResult.Value!;
-        if (!VehicleExists(vehicle))
-            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a non-existent vehicle", Problem.VehicleNotFound(vehicleId), vehicleId);
+
+        if (!vehicleResult.IsSuccess) {
+            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a vehicle that does not exist", vehicleResult.Problem!, vehicleId, bidRequest.Bidder, bidRequest.Amount.ToDomain());
+        }
+
+        var vehicle = vehicleResult.Value!;
 
         if (!auction.IsActive) {
             return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a closed auction", Problem.Closed(auction.Id), vehicleId);
@@ -100,10 +106,8 @@ public class AuctionService : IAuctionService {
         }
 
         await _auctionChannelWriter.WriteAsync(auction.ToMonitoringResponse(vehicle!, bid));
-        return Result<BidResponse>.Success(new BidResponse(vehicle!.ToDto(), bid.Bidder, bid.Value.ToDto()));
+        return Result<BidResponse>.Success(new BidResponse(vehicle.ToDto(), bid.Bidder, bid.Value.ToDto()));
     }
-
-    private static bool VehicleExists(Vehicle? vehicle) => vehicle is not null;
 
     private Result<T> LogAndReturnFailure<T>(string message, Problem problem, VehicleId vehicleId, string? bidder = null, Money? money = null) {
         if (bidder is not null && money is not null)
