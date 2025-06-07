@@ -21,13 +21,13 @@ public static class AuctionsEndpoints {
             return closeAuctionResult.ToApiResult();
         });
 
-        group.MapPost("/bid/{vehicleId:guid}", async (IAuctionService service, IValidator<BidRequest> bidValidator, Guid vehicleId, BidRequest bid) => {
-            var validationResult = await bidValidator.ValidateAsync(bid);
+        group.MapPost("/bid/{vehicleId:guid}", async (IAuctionService service, IValidator<BidRequest> bidValidator, Guid vehicleId, BidRequest bidRequest) => {
+            var validationResult = await bidValidator.ValidateAsync(bidRequest);
             if (!validationResult.IsValid) {
                 return Results.ValidationProblem(validationResult.ToDictionary());
             }
 
-            var bidResult = await service.PlaceBid(bid, new VehicleId(vehicleId));
+            var bidResult = await service.PlaceBid(bidRequest, new VehicleId(vehicleId));
             return bidResult.ToApiResult();
         });
 
