@@ -119,7 +119,7 @@ public class VehicleDtoValidatorTests {
     [Test]
     public void Validate_WhenVehicleDtoIsValid_ReturnsNoValidationErrors() {
         var vehicle = new VehicleDto {
-            Type = "Car",
+            Type = "Sedan",
             Manufacturer = "Toyota",
             Model = "Corolla",
             Year = 2020,

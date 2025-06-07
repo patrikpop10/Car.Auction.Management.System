@@ -22,7 +22,7 @@ public static class VehicleExtensions {
         _ => throw new ArgumentException($"Unknown vehicle type: {vehicle.Vehicle.Type}")
     };
 
-    public static SearchVehicleResponse DomainToResponse(this Vehicle v) => v switch {
+    public static SearchVehicleResponse DomainToResponse(this Vehicle vehicle) => vehicle switch {
         Hatchback h => new SearchVehicleResponse {
             Id = h.Id.Id,
             Vehicle = new VehicleDto { Type = nameof(Hatchback), Manufacturer = h.Manufacturer, Model = h.Model, Year = h.Year, NumberOfDoors = h.NumberOfDoors },
