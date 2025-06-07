@@ -8,7 +8,7 @@ using FluentValidation;
 namespace Api.Endpoints;
 
 public static class AuctionsEndpoints {
-    public static RouteGroupBuilder MapAuctionsEndpoints(this WebApplication application) {
+    public static WebApplication MapAuctionsEndpoints(this WebApplication application) {
         var group = application.MapGroup("/auctions").WithTags("Auctions");
 
         group.MapPost("/start/{vehicleId:guid}", async (IAuctionService service, Guid vehicleId) => {
@@ -46,6 +46,6 @@ public static class AuctionsEndpoints {
 
         });
 
-        return group;
+        return application;
     }
 }

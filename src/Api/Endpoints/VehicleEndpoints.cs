@@ -7,10 +7,10 @@ using FluentValidation;
 namespace Api.Endpoints;
 
 public static class VehiclesEndpoints {
-    public static RouteGroupBuilder MapVehiclesEndpoints(this WebApplication application, IValidator<VehicleRequest> validator) {
+    public static WebApplication MapVehiclesEndpoints(this WebApplication application) {
         var group = application.MapGroup("/vehicles").WithTags("Vehicles");
 
-        group.MapPost("/", async (IVehicleService service, VehicleRequest vehicleRequest) => {
+        group.MapPost("/", async (IVehicleService service, IValidator<VehicleRequest> validator, VehicleRequest vehicleRequest) => {
             var validationResult = await validator.ValidateAsync(vehicleRequest);
             if (!validationResult.IsValid) {
                 return Results.ValidationProblem(validationResult.ToDictionary());
@@ -26,6 +26,6 @@ public static class VehiclesEndpoints {
             return Results.Ok(results);
         });
 
-        return group;
+        return application;
     }
 }

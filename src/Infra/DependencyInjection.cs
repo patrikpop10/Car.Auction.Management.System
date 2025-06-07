@@ -1,3 +1,5 @@
+using Domain.Repositories;
+using Infra.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infra;
@@ -5,8 +7,8 @@ namespace Infra;
 public static class DependencyInjection {
     public static IServiceCollection AddInfraServices(this IServiceCollection services) {
         // Register repositories
-        services.AddSingleton<Domain.Repositories.IVehicleRepository, Repositories.InMemoryVehicleRepository>();
-        services.AddSingleton<Domain.Repositories.IAuctionRepository, Repositories.InMemoryAuctionRepository>();
+        services.AddSingleton<IVehicleRepository, InMemoryVehicleRepository>();
+        services.AddSingleton<IAuctionRepository, InMemoryAuctionRepository>();
 
         return services;
     }
