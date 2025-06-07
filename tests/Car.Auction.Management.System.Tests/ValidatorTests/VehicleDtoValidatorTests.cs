@@ -130,4 +130,64 @@ public class VehicleDtoValidatorTests {
         var result = _validator.TestValidate(vehicle);
         result.ShouldNotHaveAnyValidationErrors();
     }
+
+    [Test]
+    public void Validate_WhenTypeIsInvalid_ReturnsValidationError() {
+        var vehicle = new VehicleDto {
+            Type = "InvalidType", // Invalid type
+            Manufacturer = "Toyota",
+            Model = "Corolla",
+            Year = 2020,
+            NumberOfDoors = 4,
+            NumberOfSeats = 5,
+            LoadCapacity = 500
+        };
+        var result = _validator.TestValidate(vehicle);
+        result.ShouldHaveValidationErrorFor(x => x.Type);
+    }
+
+    [Test]
+    public void Validate_WhenTypeIsValid_ReturnsNoValidationErrors() {
+        var vehicle = new VehicleDto {
+            Type = "Hatchback", // Valid type
+            Manufacturer = "Toyota",
+            Model = "Corolla",
+            Year = 2020,
+            NumberOfDoors = 4,
+            NumberOfSeats = 5,
+            LoadCapacity = 500
+        };
+        var result = _validator.TestValidate(vehicle);
+        result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [Test]
+    public void Validate_WhenTypeIsNull_ReturnsValidationError() {
+        var vehicle = new VehicleDto {
+            Type = null!, // Null type
+            Manufacturer = "Toyota",
+            Model = "Corolla",
+            Year = 2020,
+            NumberOfDoors = 4,
+            NumberOfSeats = 5,
+            LoadCapacity = 500
+        };
+        var result = _validator.TestValidate(vehicle);
+        result.ShouldHaveValidationErrorFor(x => x.Type);
+    }
+
+    [Test]
+    public void Validate_WhenManufacturerIsNull_ReturnsValidationError() {
+        var vehicle = new VehicleDto {
+            Type = "SUV",
+            Manufacturer = null!, // Null manufacturer
+            Model = "Corolla",
+            Year = 2020,
+            NumberOfDoors = 4,
+            NumberOfSeats = 5,
+            LoadCapacity = 500
+        };
+        var result = _validator.TestValidate(vehicle);
+        result.ShouldHaveValidationErrorFor(x => x.Manufacturer);
+    }
 }

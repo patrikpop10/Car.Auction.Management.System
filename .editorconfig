@@ -30,3 +30,5 @@ dotnet_style_prefer_inferred_tuple_names = true:suggestion
 dotnet_separate_import_directive_groups = false
 dotnet_style_prefer_inferred_anonymous_type_member_names = false:suggestion
 insert_final_newline = false
+resharper_align_multiline_binary_expressions_chain = true
+resharper_align_multiline_calls_chain = true

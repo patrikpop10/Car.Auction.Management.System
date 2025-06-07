@@ -19,7 +19,7 @@ public static class VehicleExtensions {
         nameof(Sedan) => new Sedan(new VehicleId(vehicle.Id), vehicle.Vehicle.Manufacturer, vehicle.Vehicle.Model, vehicle.Vehicle.Year, vehicle.StartingBid.ToDomain(), vehicle.Vehicle.NumberOfDoors ?? 4),
         nameof(SUV) => new SUV(new VehicleId(vehicle.Id), vehicle.Vehicle.Manufacturer, vehicle.Vehicle.Model, vehicle.Vehicle.Year, vehicle.StartingBid.ToDomain(), vehicle.Vehicle.NumberOfSeats ?? 5),
         nameof(Truck) => new Truck(new VehicleId(vehicle.Id), vehicle.Vehicle.Manufacturer, vehicle.Vehicle.Model, vehicle.Vehicle.Year, vehicle.StartingBid.ToDomain(), vehicle.Vehicle.LoadCapacity ?? 1.0),
-        _ => throw new ArgumentException("Unknown vehicle type")
+        _ => throw new ArgumentException($"Unknown vehicle type: {vehicle.Vehicle.Type}")
     };
 
     public static SearchVehicleResponse DomainToResponse(this Vehicle v) => v switch {
@@ -43,6 +43,6 @@ public static class VehicleExtensions {
             Vehicle = new VehicleDto { Type = nameof(Truck), Manufacturer = t.Manufacturer, Model = t.Model, Year = t.Year, LoadCapacity = t.LoadCapacity },
             StartingBid = t.StartingBid.ToDto(),
         },
-        _ => throw new NotImplementedException()
+        _ => throw new ArgumentException("Unknown vehicle type")
     };
 }

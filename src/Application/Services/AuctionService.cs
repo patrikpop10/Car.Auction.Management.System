@@ -80,9 +80,12 @@ public class AuctionService : IAuctionService {
         if (!VehicleExists(vehicle))
             return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a non-existent vehicle", Problem.VehicleNotFound(vehicleId), vehicleId);
 
-        if (auction is null)
+        if (auction is null) {
             return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a vehicle without an active auction", Problem.AuctionNotActive(vehicleId), vehicleId);
-
+        }
+        if (!auction.IsActive) {
+            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a closed auction", Problem.AuctionNotActive(vehicleId), vehicleId);
+        }
 
         _logger.LogInformation("Placing bid for vehicle {VehicleId} by {Bidder}: {Money}", vehicleId, bidRequest.Bidder, bidRequest.Bid);
 

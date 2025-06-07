@@ -1,6 +1,5 @@
 using Application.Extensions;
 using Application.Interfaces;
-using Application.Models.Dtos;
 using Application.Models.Responses;
 using Domain.Common;
 using Domain.Entities.Vehicles;
@@ -46,5 +45,4 @@ public class VehicleService : IVehicleService {
     }
 
     private async Task<bool> IsAuctionActive(VehicleId vehicleId) => await _auctionRepository.IsAuctionActive(vehicleId);
-
 }
