@@ -6,15 +6,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddLogging();
 
-builder
-    .Services
+builder.Services
     .AddApplicationServices()
     .AddValidators()
     .AddInfraServices();
 
 var app = builder.Build();
 
-app.MapVehiclesEndpoints();
-app.MapAuctionsEndpoints();
+app.MapVehiclesEndpoints()
+    .MapAuctionsEndpoints();
 
 app.Run();
