@@ -5,7 +5,7 @@ using FluentValidation;
 namespace Application.Validators.DtosValidators;
 
 public class VehicleDtoValidator : AbstractValidator<VehicleDto> {
-    private readonly static HashSet<string> ValidVehicleTypes = [
+    private static readonly HashSet<string> ValidVehicleTypes = [
         nameof(Hatchback),
         nameof(Sedan),
         nameof(SUV),
