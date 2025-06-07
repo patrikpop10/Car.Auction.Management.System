@@ -35,8 +35,13 @@ public class AuctionService : IAuctionService {
         if (!VehicleExists(vehicle))
             return LogAndReturnFailure<StartAuctionResponse>("Attempted to start an auction for a non-existent vehicle", Problem.VehicleNotFound(vehicleId), vehicleId);
 
-        if (await _auctionRepo.IsAuctionForVehicleActive(vehicleId))
+        var isAuctionActiveResult = await _auctionRepo.IsAuctionForVehicleActive(vehicleId);
+        if (!isAuctionActiveResult.IsSuccess) {
+            return LogAndReturnFailure<StartAuctionResponse>("Issue while checking if auction is valid", isAuctionActiveResult.Problem!, vehicleId);
+        }
+        if (isAuctionActiveResult.Value) {
             return LogAndReturnFailure<StartAuctionResponse>("Attempted to start an auction for a vehicle with an active auction", Problem.AuctionForVehicleAlreadyActive(vehicleId), vehicleId);
+        }
 
         _logger.LogInformation("Starting auction for vehicle: {VehicleId}", vehicleId);
         var createdAuction = new Auction(vehicleId);
@@ -45,12 +50,12 @@ public class AuctionService : IAuctionService {
     }
 
     public async Task<Result<AuctionClosedResponse>> CloseAuction(VehicleId vehicleId) {
-        var auction = await _auctionRepo.GetActiveByVehicleId(vehicleId);
-        if (auction is null)
-            return LogAndReturnFailure<AuctionClosedResponse>("Attempted to close an auction for a vehicle without an active auction", Problem.AuctionForVehicleNotActive(vehicleId), vehicleId);
+        var auctionResult = await _auctionRepo.GetActiveByVehicleId(vehicleId);
+        if (!auctionResult.IsSuccess)
+            return LogAndReturnFailure<AuctionClosedResponse>("Attempted to close an auction for a vehicle without an active auction", auctionResult.Problem!, vehicleId);
 
         _logger.LogInformation("Closing auction for vehicle: {VehicleId}", vehicleId);
-        return await CloseAuction(auction);
+        return await CloseAuction(auctionResult.Value!);
     }
 
     private async Task<Result<AuctionClosedResponse>> CloseAuction(Auction auction) {
@@ -72,15 +77,16 @@ public class AuctionService : IAuctionService {
     }
 
     public async Task<Result<BidResponse>> PlaceBid(BidRequest bidRequest, VehicleId vehicleId) {
-        var auction = await _auctionRepo.GetActiveByVehicleId(vehicleId);
+        var auctionResult = await _auctionRepo.GetActiveByVehicleId(vehicleId);
         var vehicle = await _vehicleRepo.GetById(vehicleId);
 
+        if (!auctionResult.IsSuccess) {
+            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a vehicle without an active auction", auctionResult.Problem! , vehicleId);
+        }
+        var auction = auctionResult.Value!;
         if (!VehicleExists(vehicle))
             return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a non-existent vehicle", Problem.VehicleNotFound(vehicleId), vehicleId);
 
-        if (auction is null) {
-            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a vehicle without an active auction", Problem.AuctionForVehicleNotActive(vehicleId), vehicleId);
-        }
         if (!auction.IsActive) {
             return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a closed auction", Problem.Closed(auction.Id), vehicleId);
         }

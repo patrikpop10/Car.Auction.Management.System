@@ -2,7 +2,6 @@ using Application.Extensions;
 using Application.Interfaces;
 using Application.Models.Responses;
 using Domain.Common;
-using Domain.Entities.Auction;
 using Domain.Entities.Vehicles;
 using Domain.Repositories;
 using Microsoft.Extensions.Logging;
@@ -45,5 +44,12 @@ public class VehicleService : IVehicleService {
         return activeVehicles;
     }
 
-    private async Task<bool> IsAuctionActive(VehicleId vehicleId) => await _auctionRepository.IsAuctionForVehicleActive(vehicleId);
+    private async Task<bool> IsAuctionActive(VehicleId vehicleId) {
+        var result = await _auctionRepository.IsAuctionForVehicleActive(vehicleId);
+        if (!result.IsSuccess) {
+            _logger.LogWarning("Error checking auction status for vehicle {VehicleId}: {ErrorMessage}", vehicleId, result.Problem?.ErrorMessage);
+            return false;
+        }
+        return result.Value;
+    }
 }

@@ -71,7 +71,7 @@ public class AuctionServiceTests {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
         await _vehicleService.AddVehicle(v);
         await _service.StartAuction(v.Id);
-        Assert.That(await _auctionRepo.IsAuctionForVehicleActive(v.Id), Is.True);
+        Assert.That((await _auctionRepo.IsAuctionForVehicleActive(v.Id)).Value, Is.True);
     }
 
     [Test]
@@ -111,8 +111,8 @@ public class AuctionServiceTests {
         await _service.PlaceBid(bidDto2, v.Id);
         var auction = await _auctionRepo.GetActiveByVehicleId(v.Id);
 
-        Assert.That(auction.Bids.Count, Is.EqualTo(2));
-        Assert.That(auction.Bids.Last().Bidder, Is.EqualTo("Bob"));
+        Assert.That(auction.Value.Bids.Count, Is.EqualTo(2));
+        Assert.That(auction.Value.Bids.Last().Bidder, Is.EqualTo("Bob"));
     }
 
     [Test]
