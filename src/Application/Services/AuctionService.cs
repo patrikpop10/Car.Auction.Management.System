@@ -83,7 +83,7 @@ public class AuctionService : IAuctionService {
         var vehicleResult = await _vehicleRepo.GetById(vehicleId);
 
         if (!auctionResult.IsSuccess) {
-            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a vehicle without an active auction", auctionResult.Problem! , vehicleId);
+            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a vehicle without an active auction", auctionResult.Problem!, vehicleId);
         }
         var auction = auctionResult.Value!;
 

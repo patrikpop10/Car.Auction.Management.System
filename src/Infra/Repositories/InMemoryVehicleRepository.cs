@@ -13,7 +13,7 @@ public class InMemoryVehicleRepository : IVehicleRepository {
     }
 
     public Task<Result<Vehicle>> GetById(VehicleId id) {
-        var vehicle =_vehicles.GetValueOrDefault(id);
+        var vehicle = _vehicles.GetValueOrDefault(id);
         return Task.FromResult(vehicle is not null
             ? Result<Vehicle>.Success(vehicle)
             : Result<Vehicle>.Failure(Problem.VehicleNotFound(id)));
@@ -29,7 +29,7 @@ public class InMemoryVehicleRepository : IVehicleRepository {
     }
 
     public Task<Result<bool>> Exists(VehicleId id) {
-        var exists =_vehicles.ContainsKey(id);
+        var exists = _vehicles.ContainsKey(id);
         return Task.FromResult(exists ? Result<bool>.Success(true) : Result<bool>.Success(false));
     }
     public Task<Result> Remove(VehicleId id) {
