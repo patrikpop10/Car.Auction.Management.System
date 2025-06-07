@@ -2,9 +2,7 @@ using System.Net.ServerSentEvents;
 using Application.Interfaces;
 using Application.Models.Requests;
 using Application.Models.Responses;
-
 using Domain.Entities.Vehicles;
-
 using FluentValidation;
 
 namespace Api.Endpoints;
