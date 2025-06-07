@@ -56,7 +56,7 @@ public class VehicleRequestValidatorTests {
             Id = Guid.NewGuid(),
             StartingBid = new MoneyDto { Amount = 100, Currency = "USD" },
             Vehicle = new VehicleDto {
-                Type = "Car",
+                Type = "Sedan",
                 Manufacturer = "Toyota",
                 Model = "Corolla",
                 Year = 2020,

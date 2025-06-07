@@ -1,6 +1,5 @@
 using Application.Extensions;
 using Application.Interfaces;
-using Application.Models.Dtos;
 using Application.Models.Responses;
 using Domain.Common;
 using Domain.Entities.Vehicles;
@@ -35,7 +34,7 @@ public class VehicleService : IVehicleService {
 
     public async Task<IEnumerable<SearchVehicleResponse>> SearchVehicles(string? type = null, string? manufacturer = null, string? model = null, int? year = null) {
         var vehicleDtos = (await _vehicleRepo.Search(type, manufacturer, model, year))
-            .Select(MapToDto);
+            .Select(v => v.DomainToResponse());
         var activeVehicles = new List<SearchVehicleResponse>();
 
         foreach (var v in vehicleDtos) {
@@ -45,32 +44,5 @@ public class VehicleService : IVehicleService {
         return activeVehicles;
     }
 
-    private async Task<bool> IsAuctionActive(VehicleId vehicleId) {
-        return await _auctionRepository.IsAuctionActive(vehicleId);
-    }
-
-    private static SearchVehicleResponse MapToDto(Vehicle v) => v switch {
-        Hatchback h => new SearchVehicleResponse {
-            Id = h.Id.Id,
-            Vehicle = new VehicleDto { Type = "Hatchback", Manufacturer = h.Manufacturer, Model = h.Model, Year = h.Year, NumberOfDoors = h.NumberOfDoors },
-            StartingBid = h.StartingBid.ToDto(),
-        },
-        Sedan s => new SearchVehicleResponse {
-            Id = s.Id.Id,
-            Vehicle = new VehicleDto { Type = "Sedan", Manufacturer = s.Manufacturer, Model = s.Model, Year = s.Year, NumberOfDoors = s.NumberOfDoors },
-            StartingBid = s.StartingBid.ToDto(),
-        },
-        SUV suv => new SearchVehicleResponse {
-            Id = suv.Id.Id,
-            Vehicle = new VehicleDto() { Type = "SUV", Manufacturer = suv.Manufacturer, Model = suv.Model, Year = suv.Year, NumberOfSeats = suv.NumberOfSeats },
-            StartingBid = suv.StartingBid.ToDto(),
-        },
-        Truck t => new SearchVehicleResponse {
-            Id = t.Id.Id,
-            Vehicle = new VehicleDto { Type = "Truck", Manufacturer = t.Manufacturer, Model = t.Model, Year = t.Year, LoadCapacity = t.LoadCapacity },
-            StartingBid = t.StartingBid.ToDto(),
-        },
-        _ => throw new NotImplementedException()
-    };
-
+    private async Task<bool> IsAuctionActive(VehicleId vehicleId) => await _auctionRepository.IsAuctionActive(vehicleId);
 }

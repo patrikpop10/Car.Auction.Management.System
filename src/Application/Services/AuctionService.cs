@@ -80,16 +80,19 @@ public class AuctionService : IAuctionService {
         if (!VehicleExists(vehicle))
             return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a non-existent vehicle", Problem.VehicleNotFound(vehicleId), vehicleId);
 
-        if (auction is null)
+        if (auction is null) {
             return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a vehicle without an active auction", Problem.AuctionNotActive(vehicleId), vehicleId);
+        }
+        if (!auction.IsActive) {
+            return LogAndReturnFailure<BidResponse>("Attempted to place a bid on a closed auction", Problem.Closed(vehicleId), vehicleId);
+        }
 
-
-        _logger.LogInformation("Placing bid for vehicle {VehicleId} by {Bidder}: {Money}", vehicleId, bidRequest.Bidder, bidRequest.Bid);
+        _logger.LogInformation("Placing bid for vehicle {VehicleId} by {Bidder}: {Money}", vehicleId, bidRequest.Bidder, bidRequest.Amount);
 
         var bid = bidRequest.RequestToDomain();
         var bidResult = auction.PlaceBid(bid, vehicle!);
         if (!bidResult.IsSuccess) {
-            return LogAndReturnFailure<BidResponse>("Failed to place bid", bidResult.Problem!, vehicleId, bidRequest.Bidder, bidRequest.Bid.ToDomain());
+            return LogAndReturnFailure<BidResponse>("Failed to place bid", bidResult.Problem!, vehicleId, bidRequest.Bidder, bidRequest.Amount.ToDomain());
         }
 
         await _auctionChannelWriter.WriteAsync(auction.ToMonitoringResponse(vehicle!, bid));

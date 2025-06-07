@@ -1,9 +1,16 @@
 using Application.Models.Dtos;
+using Domain.Entities.Vehicles;
 using FluentValidation;
 
 namespace Application.Validators.DtosValidators;
 
 public class VehicleDtoValidator : AbstractValidator<VehicleDto> {
+    private static readonly HashSet<string> ValidVehicleTypes = [
+        nameof(Hatchback),
+        nameof(Sedan),
+        nameof(SUV),
+        nameof(Truck)
+    ];
 
     public VehicleDtoValidator() {
         RuleFor(vehicle => vehicle.Type)
@@ -35,5 +42,11 @@ public class VehicleDtoValidator : AbstractValidator<VehicleDto> {
             .GreaterThanOrEqualTo(0)
             .WithMessage("Load capacity must be zero or greater.")
             .When(vehicle => vehicle.LoadCapacity.HasValue);
+
+        RuleFor(vehicle => vehicle.Type)
+            .Must(BeAValidVehicleType)
+            .WithMessage("Vehicle type must be one of the following: Hatchback, Sedan, SUV, Truck.");
+
     }
+    private static bool BeAValidVehicleType(string arg) => ValidVehicleTypes.Contains(arg);
 }
