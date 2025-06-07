@@ -3,11 +3,9 @@ using FluentValidation;
 
 namespace Application.Validators.DtosValidators;
 
-public class VehicleDtoValidator : AbstractValidator<VehicleDto>
-{
+public class VehicleDtoValidator : AbstractValidator<VehicleDto> {
 
-    public VehicleDtoValidator() 
-    {
+    public VehicleDtoValidator() {
         RuleFor(vehicle => vehicle.Type)
             .NotEmpty()
             .WithMessage("Vehicle type is required.");

@@ -4,10 +4,8 @@ using FluentValidation;
 
 namespace Application.Validators.RequestValidators;
 
-public class BidRequestValidator : AbstractValidator<BidRequest>
-{
-    public BidRequestValidator()
-    {
+public class BidRequestValidator : AbstractValidator<BidRequest> {
+    public BidRequestValidator() {
         RuleFor(x => x.Bidder)
             .NotEmpty()
             .WithMessage("Bidder is required.");

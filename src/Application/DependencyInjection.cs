@@ -11,14 +11,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Application;
 
-public static class DependencyInjection
-{
-    public static IServiceCollection  AddApplicationServices(this IServiceCollection services)
-    {
-        
+public static class DependencyInjection {
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services) {
+
         // Create a channel for auction monitoring
-        var channel = Channel.CreateUnbounded<AuctionMonitoringResponse>(new UnboundedChannelOptions 
-        {
+        var channel = Channel.CreateUnbounded<AuctionMonitoringResponse>(new UnboundedChannelOptions {
             SingleReader = true,
             SingleWriter = false
         });
@@ -33,8 +30,7 @@ public static class DependencyInjection
 
         return services;
     }
-    public static IServiceCollection AddValidators(this IServiceCollection services)
-    {
+    public static IServiceCollection AddValidators(this IServiceCollection services) {
         services.AddScoped<IValidator<BidRequest>, BidRequestValidator>();
         services.AddScoped<IValidator<VehicleRequest>, VehicleRequestValidator>();
         services.AddScoped<IValidator<MoneyDto>, MoneyDtoValidator>();

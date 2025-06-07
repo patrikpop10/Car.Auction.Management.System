@@ -1,16 +1,9 @@
-﻿namespace Domain.Entities.Auction;
+namespace Domain.Entities.Auction;
 
-public sealed class Bid
-{
-    public string Bidder { get; }
-    public Money Value { get; }
-    public DateTime PlacedAt { get; }
+public sealed class Bid(string bidder, Money value) {
+    public string Bidder { get; } = bidder;
+    public Money Value { get; } = value;
+    public DateTime PlacedAt { get; } = DateTime.UtcNow;
 
-    public Bid(string bidder, Money value)
-    {
-        Bidder = bidder;
-        Value = value;
-        PlacedAt = DateTime.UtcNow;
-    }
-    public static Bid Empty => new (string.Empty, Money.None());
+    public static Bid Empty => new(string.Empty, Money.None());
 }

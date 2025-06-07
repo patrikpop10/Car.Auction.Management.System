@@ -4,10 +4,8 @@ using FluentValidation;
 
 namespace Application.Validators.RequestValidators;
 
-public class VehicleRequestValidator : AbstractValidator<VehicleRequest>
-{
-    public VehicleRequestValidator()
-    {
+public class VehicleRequestValidator : AbstractValidator<VehicleRequest> {
+    public VehicleRequestValidator() {
         RuleFor(x => x.Id)
             .NotEmpty()
             .WithMessage("Vehicle ID is required.");

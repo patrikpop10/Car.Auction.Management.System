@@ -3,10 +3,8 @@ using FluentValidation;
 
 namespace Application.Validators.DtosValidators;
 
-public class MoneyDtoValidator: AbstractValidator<MoneyDto>
-{
-    public MoneyDtoValidator()
-    {
+public class MoneyDtoValidator : AbstractValidator<MoneyDto> {
+    public MoneyDtoValidator() {
         RuleFor(m => m.Amount)
             .GreaterThan(0)
             .WithMessage("Amount must be greater than zero.");
@@ -22,16 +20,15 @@ public class MoneyDtoValidator: AbstractValidator<MoneyDto>
         RuleFor(m => m.Currency)
             .Matches("^[A-Z]+$")
             .WithMessage("Currency must consist of uppercase letters only.");
-        
+
         RuleFor(m => m.Currency)
             .Must(BeAValidCurrency)
             .WithMessage("Currency must be a valid currency code.");
     }
 
-    private static bool BeAValidCurrency(string arg)
-    {
+    private static bool BeAValidCurrency(string arg) {
         // This is a simplified example. In a real application, you might want to check against a more comprehensive list of valid currencies.
-        var validCurrencies = new[] { "USD", "EUR", "GBP", "JPY"};
+        var validCurrencies = new[] { "USD", "EUR", "GBP", "JPY" };
         return validCurrencies.Contains(arg);
     }
 }

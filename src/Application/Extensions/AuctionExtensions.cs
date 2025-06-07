@@ -7,20 +7,19 @@ using Domain.Events;
 
 namespace Application.Extensions;
 
-public static class AuctionExtensions
-{
-    public static StartAuctionResponse ToStartAuctionResponse(this Auction auction, Vehicle vehicle) 
+public static class AuctionExtensions {
+    public static StartAuctionResponse ToStartAuctionResponse(this Auction auction, Vehicle vehicle)
         => new StartAuctionResponse(
             vehicle.StartingBid.ToDto(),
             auction.StartedAt,
             auction.VehicleId.Id,
             vehicle.ToDto());
-    
-    
-    public static AuctionClosed Close(this Auction auction, string winner, Money winningBid) 
-        =>  new AuctionClosed(
-            auction.VehicleId.Id, 
-            winner, 
+
+
+    public static AuctionClosed Close(this Auction auction, string winner, Money winningBid)
+        => new AuctionClosed(
+            auction.VehicleId.Id,
+            winner,
             winningBid);
 
 
