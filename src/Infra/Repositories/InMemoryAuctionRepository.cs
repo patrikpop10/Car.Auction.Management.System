@@ -7,9 +7,9 @@ namespace Infra.Repositories {
     public class InMemoryAuctionRepository : IAuctionRepository {
         private readonly List<Auction> _auctions = [];
 
-        public Task Add(Auction auction) {
+        public Task<Result> Add(Auction auction) {
             _auctions.Add(auction);
-            return Task.CompletedTask;
+            return Task.FromResult(Result.Success());
         }
         public Task<Auction?> GetActiveByAuctionId(AuctionId auctionId) => Task.FromResult(_auctions.FirstOrDefault(a => a.Id == auctionId && a.IsActive));
 

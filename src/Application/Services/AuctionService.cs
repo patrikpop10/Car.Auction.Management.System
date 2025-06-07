@@ -45,8 +45,8 @@ public class AuctionService : IAuctionService {
 
         _logger.LogInformation("Starting auction for vehicle: {VehicleId}", vehicleId);
         var createdAuction = new Auction(vehicleId);
-        await _auctionRepo.Add(createdAuction);
-        return Result<StartAuctionResponse>.Success(createdAuction.ToStartAuctionResponse(vehicle!));
+        var addResult = await _auctionRepo.Add(createdAuction);
+        return !addResult.IsSuccess ? LogAndReturnFailure<StartAuctionResponse>("Failed to add auction to repository", addResult.Problem!, vehicleId) : Result<StartAuctionResponse>.Success(createdAuction.ToStartAuctionResponse(vehicle!));
     }
 
     public async Task<Result<AuctionClosedResponse>> CloseAuction(VehicleId vehicleId) {

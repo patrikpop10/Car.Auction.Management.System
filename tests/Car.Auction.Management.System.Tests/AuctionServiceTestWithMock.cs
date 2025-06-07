@@ -81,7 +81,7 @@ public class AuctionServiceTestsWithMock {
 
         _vehicleRepo.GetById(v.Id).Returns(v);
         _auctionRepo.IsAuctionForVehicleActive(v.Id).Returns(Result<bool>.Success(false));
-
+        _auctionRepo.Add(Arg.Any<Domain.Entities.Auction.Auction>()).Returns(Result.Success());
         var result = await _service.StartAuction(v.Id);
 
         Assert.That(result.IsSuccess, Is.True);
