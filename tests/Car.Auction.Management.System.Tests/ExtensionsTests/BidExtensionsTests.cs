@@ -11,7 +11,7 @@ public class BidExtensionsTests {
     [Test]
     public void RequestToDto_WhenBidRequestIsProvided_ReturnsCorrectBidDto() {
         // Arrange
-        var bidRequest = new BidRequest ("John",  new MoneyDto { Amount = 100, Currency = "USD" } );
+        var bidRequest = new BidRequest("John", new MoneyDto { Amount = 100, Currency = "USD" });
 
         // Act
         var dto = bidRequest.RequestToDto();
@@ -27,7 +27,7 @@ public class BidExtensionsTests {
     [Test]
     public void RequestToDomain_WhenBidRequestIsProvided_ReturnsCorrectBid() {
         // Arrange
-        var bidRequest = new BidRequest("John", new MoneyDto { Amount = 100, Currency = "USD" } );
+        var bidRequest = new BidRequest("John", new MoneyDto { Amount = 100, Currency = "USD" });
 
         // Act
         var domain = bidRequest.RequestToDomain();
