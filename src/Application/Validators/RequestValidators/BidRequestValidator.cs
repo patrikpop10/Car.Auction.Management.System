@@ -10,7 +10,7 @@ public class BidRequestValidator : AbstractValidator<BidRequest> {
             .NotEmpty()
             .WithMessage("Bidder is required.");
 
-        RuleFor(x => x.Bid)
+        RuleFor(x => x.Amount)
             .NotNull()
             .WithMessage("Amount is required.")
             .SetValidator(new MoneyDtoValidator());

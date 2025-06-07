@@ -22,7 +22,7 @@ public class BidRequestValidatorTests {
     public void Validate_WhenBidIsNull_ReturnsValidationError() {
         var request = new BidRequest("John Doe", null);
         var result = _validator.TestValidate(request);
-        result.ShouldHaveValidationErrorFor(x => x.Bid);
+        result.ShouldHaveValidationErrorFor(x => x.Amount);
     }
 
     [Test]

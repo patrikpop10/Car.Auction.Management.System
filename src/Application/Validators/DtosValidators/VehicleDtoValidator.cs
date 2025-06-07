@@ -5,6 +5,12 @@ using FluentValidation;
 namespace Application.Validators.DtosValidators;
 
 public class VehicleDtoValidator : AbstractValidator<VehicleDto> {
+    private readonly static HashSet<string> ValidVehicleTypes = [
+        nameof(Hatchback),
+        nameof(Sedan),
+        nameof(SUV),
+        nameof(Truck)
+    ];
 
     public VehicleDtoValidator() {
         RuleFor(vehicle => vehicle.Type)
@@ -38,12 +44,9 @@ public class VehicleDtoValidator : AbstractValidator<VehicleDto> {
             .When(vehicle => vehicle.LoadCapacity.HasValue);
 
         RuleFor(vehicle => vehicle.Type)
-            .Must(BeAValidCarType)
+            .Must(BeAValidVehicleType)
             .WithMessage("Vehicle type must be one of the following: Hatchback, Sedan, SUV, Truck.");
 
     }
-    private static bool BeAValidCarType(string arg) {
-        List<string> validTypes = [nameof(Hatchback), nameof(Sedan), nameof(SUV), nameof(Truck)];
-        return validTypes.Contains(arg);
-    }
+    private static bool BeAValidVehicleType(string arg) => ValidVehicleTypes.Contains(arg);
 }
