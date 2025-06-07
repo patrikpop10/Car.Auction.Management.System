@@ -60,9 +60,9 @@ public class ApiComponentTests {
     [Test]
     public async Task AddingVehicleWithDuplicateIdReturnsError() {
         var id = Guid.NewGuid();
-        var vehicle1 = new SearchVehicleResponse() {
+        var vehicle1 = new SearchVehicleResponse {
             Id = id,
-            Vehicle = new VehicleDto() {
+            Vehicle = new VehicleDto {
                 Type = "Sedan",
                 Manufacturer = "Honda",
                 Model = "Accord",
@@ -74,9 +74,9 @@ public class ApiComponentTests {
                 Currency = "USD"
             },
         };
-        var vehicle2 = new SearchVehicleResponse() {
+        var vehicle2 = new SearchVehicleResponse {
             Id = id,
-            Vehicle = new VehicleDto() {
+            Vehicle = new VehicleDto {
                 Type = "Hatchback",
                 Manufacturer = "Toyota",
                 Model = "Yaris",
@@ -96,9 +96,9 @@ public class ApiComponentTests {
 
     [Test]
     public async Task CanStartAndCloseAuction() {
-        var vehicle = new SearchVehicleResponse() {
+        var vehicle = new SearchVehicleResponse {
             Id = Guid.NewGuid(),
-            Vehicle = new VehicleDto() {
+            Vehicle = new VehicleDto {
                 Type = "Truck",
                 Manufacturer = "Ford",
                 Model = "F-150",
@@ -114,6 +114,7 @@ public class ApiComponentTests {
         };
 
         var addVehicleResponse = await _client.PostAsync("/vehicles", AsJson(vehicle));
+        addVehicleResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         var startAuctionResponse = await _client.PostAsync($"/auctions/start/{vehicle.Id}", null);
         startAuctionResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -130,9 +131,9 @@ public class ApiComponentTests {
     [Test]
     public async Task StartingAuctionWhenAlreadyActiveReturnsError() {
         // Arrange
-        var vehicle = new SearchVehicleResponse() {
+        var vehicle = new SearchVehicleResponse {
             Id = Guid.NewGuid(),
-            Vehicle = new VehicleDto() {
+            Vehicle = new VehicleDto {
                 Type = "SUV",
                 Manufacturer = "Nissan",
                 Model = "Rogue",
@@ -200,9 +201,9 @@ public class ApiComponentTests {
 
     [Test]
     public async Task PlacingBidWithoutActiveAuctionReturnsError() {
-        var vehicle = new SearchVehicleResponse() {
+        var vehicle = new SearchVehicleResponse {
             Id = Guid.NewGuid(),
-            Vehicle = new VehicleDto() {
+            Vehicle = new VehicleDto {
                 Type = "Hatchback",
                 Manufacturer = "Mazda",
                 Model = "3",
@@ -225,9 +226,9 @@ public class ApiComponentTests {
 
     [Test]
     public async Task ClosingAuctionThatIsNotActiveReturnsError() {
-        var vehicle = new SearchVehicleResponse() {
+        var vehicle = new SearchVehicleResponse {
             Id = Guid.NewGuid(),
-            Vehicle = new VehicleDto() {
+            Vehicle = new VehicleDto {
                 Type = "SUV",
                 Manufacturer = "Ford",
                 Model = "Explorer",
@@ -287,5 +288,4 @@ public class ApiComponentTests {
         var getVehicleResponse = await _client.GetAsync($"/vehicles/{vehicle.Id}");
         getVehicleResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
-
 }

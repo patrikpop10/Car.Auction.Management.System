@@ -5,6 +5,7 @@ using Domain.Events;
 namespace Domain.Entities.Auction;
 
 public class Auction {
+    public AuctionId Id { get; }
     public VehicleId VehicleId { get; }
     public bool IsActive { get; private set; }
     public List<Bid> Bids { get; }
@@ -12,10 +13,11 @@ public class Auction {
     public DateTime? ClosedAt { get; private set; }
 
     public Auction(VehicleId vehicleId) {
+        Id = AuctionId.New();
         VehicleId = vehicleId;
         IsActive = true;
-        StartedAt = DateTime.UtcNow;
         Bids = new List<Bid>();
+        StartedAt = DateTime.UtcNow;
     }
 
     public Result PlaceBid(Bid bid, Vehicle vehicle) {
@@ -23,7 +25,7 @@ public class Auction {
             return Result.Failure(Problem.VehicleIdMismatch(VehicleId, vehicle.Id));
         }
         if (!IsActive) {
-            return Result.Failure(Problem.AuctionNotActive(VehicleId));
+            return Result.Failure(Problem.AuctionForVehicleNotActive(VehicleId));
         }
 
         var isBidValid = IsBidValid(bid, vehicle);
@@ -37,19 +39,23 @@ public class Auction {
 
     public Result<AuctionClosed> Close() {
         if (!IsActive) {
-            return Result<AuctionClosed>.Failure(Problem.AuctionNotActive(VehicleId));
+            return Result<AuctionClosed>.Failure(Problem.AuctionForVehicleNotActive(VehicleId));
         }
         IsActive = false;
         ClosedAt = DateTime.UtcNow;
-        return Result<AuctionClosed>.Success(new AuctionClosed(VehicleId.Id, Bids.LastOrDefault()?.Bidder ?? "", Bids.LastOrDefault()?.Value ?? Money.None()));
+        return Result<AuctionClosed>.Success(new AuctionClosed(Id.Id, VehicleId.Id, Bids.LastOrDefault()?.Bidder ?? "", Bids.LastOrDefault()?.Value ?? Money.None()));
     }
 
     private bool IsBidValid(Bid bid, Vehicle vehicle) => bid.Value.Amount > 0
                                                       && (Bids.Count == 0 || bid.Value.Amount > CurrentHighestBid.Value.Amount
-                                                          && bid.Value.CurrencyType == CurrentHighestBid.Value.CurrencyType)
+                                                          && bid.Value.IsTheSameCurrency(CurrentHighestBid.Value))
                                                       && bid.Value.Amount >= vehicle.StartingBid.Amount
-                                                      && bid.Value.CurrencyType == vehicle.StartingBid.CurrencyType;
+                                                      && bid.Value.IsTheSameCurrency(vehicle.StartingBid);
 
     private Bid CurrentHighestBid => Bids.Count > 0 ? Bids[^1] : Bid.Empty;
 
 }
+
+public readonly record struct AuctionId(Guid Id) {
+    public static AuctionId New() => new(Guid.NewGuid());
+};

@@ -65,7 +65,7 @@ public class AuctionServiceTestsWithMock {
         var v2 = new Hatchback(new VehicleId(Guid.NewGuid()), "Honda", "Fit", 2023, new Money(3000, CurrencyType.USD), 5);
 
         _vehicleRepo.Search("Hatchback", "Honda").Returns(new[] { v2 });
-        _auctionRepo.IsAuctionActive(v2.Id).Returns(true);
+        _auctionRepo.IsAuctionForVehicleActive(v2.Id).Returns(true);
 
         var results = await _vehicleService.SearchVehicles(type: "Hatchback", manufacturer: "Honda");
 
@@ -79,7 +79,7 @@ public class AuctionServiceTestsWithMock {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
 
         _vehicleRepo.GetById(v.Id).Returns(v);
-        _auctionRepo.IsAuctionActive(v.Id).Returns(false);
+        _auctionRepo.IsAuctionForVehicleActive(v.Id).Returns(false);
 
         var result = await _service.StartAuction(v.Id);
 
@@ -105,7 +105,7 @@ public class AuctionServiceTestsWithMock {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
 
         _vehicleRepo.GetById(v.Id).Returns(v);
-        _auctionRepo.IsAuctionActive(v.Id).Returns(true);
+        _auctionRepo.IsAuctionForVehicleActive(v.Id).Returns(true);
 
         var result = await _service.StartAuction(v.Id);
 

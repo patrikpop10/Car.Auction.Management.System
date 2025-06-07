@@ -1,3 +1,4 @@
+using Domain.Entities.Auction;
 using Domain.Entities.Vehicles;
 
 namespace Domain.Common;
@@ -25,13 +26,13 @@ public record Problem {
         ErrorMessage = $"A vehicle with the ID {vehicleId.Id} already exists."
     };
 
-    public static Problem AuctionAlreadyActive(VehicleId vehicleId) => new() {
+    public static Problem AuctionForVehicleAlreadyActive(VehicleId auctionId) => new() {
         Status = 409,
         Title = "AuctionAlreadyActive",
-        ErrorMessage = $"An auction is already active for the vehicle with ID {vehicleId.Id}."
+        ErrorMessage = $"An auction is already active for the vehicle with ID {auctionId.Id}."
     };
 
-    public static Problem AuctionNotActive(VehicleId vehicleId) => new() {
+    public static Problem AuctionForVehicleNotActive(VehicleId vehicleId) => new() {
         Status = 404,
         Title = "AuctionNotActive",
         ErrorMessage = $"No active auction found for the vehicle with ID {vehicleId.Id}."
@@ -49,20 +50,20 @@ public record Problem {
         ErrorMessage = "An unexpected error occurred on the server."
     };
 
-    public static Problem AuctionNotFound(VehicleId vehicleId) => new() {
+    public static Problem AuctionNotFound(AuctionId auctionId) => new() {
         Status = 404,
         Title = "AuctionNotFound",
-        ErrorMessage = $"No auction found for the vehicle with ID {vehicleId.Id}."
+        ErrorMessage = $"No auction found for the vehicle with ID {auctionId.Id}."
     };
 
     public static Problem VehicleIdMismatch(VehicleId vehicleId, VehicleId vehicleId1) => new() {
         Status = 400,
         Title = "VehicleIdMismatch",
-        ErrorMessage = $"The provided vehicle ID {vehicleId1.Id} does not match the auction's vehicle ID {vehicleId.Id}."
+        ErrorMessage = $"The provided vehicle ID {vehicleId.Id} does not match the auction's vehicle ID {vehicleId.Id}."
     };
-    public static Problem Closed(VehicleId vehicleId) => new() {
+    public static Problem Closed(AuctionId auctionId) => new() {
         Status = 400,
         Title = "Closed",
-        ErrorMessage = $"The auction for the vehicle with ID {vehicleId.Id} is closed."
+        ErrorMessage = $"The auction {auctionId.Id} is closed."
     };
 }

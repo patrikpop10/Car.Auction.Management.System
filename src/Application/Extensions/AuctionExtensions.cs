@@ -1,4 +1,4 @@
-using Application.Interfaces;
+using Application.Models.Dtos;
 using Application.Models.Responses;
 using Domain.Entities;
 using Domain.Entities.Auction;
@@ -17,6 +17,7 @@ public static class AuctionExtensions {
 
 
     public static AuctionClosed Close(this Auction auction, string winner, Money winningBid) => new AuctionClosed(
+        auction.Id.Id,
         auction.VehicleId.Id,
         winner,
         winningBid);
@@ -28,6 +29,7 @@ public static class AuctionExtensions {
         auction.ToDto());
 
     private static AuctionDto ToDto(this Auction auction) => new AuctionDto(
+        auction.Id,
         auction.VehicleId.Id,
         auction.StartedAt,
         auction.ClosedAt,

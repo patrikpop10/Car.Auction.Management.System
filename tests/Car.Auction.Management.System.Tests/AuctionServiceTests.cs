@@ -71,7 +71,7 @@ public class AuctionServiceTests {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
         await _vehicleService.AddVehicle(v);
         await _service.StartAuction(v.Id);
-        Assert.That(await _auctionRepo.IsAuctionActive(v.Id), Is.True);
+        Assert.That(await _auctionRepo.IsAuctionForVehicleActive(v.Id), Is.True);
     }
 
     [Test]
