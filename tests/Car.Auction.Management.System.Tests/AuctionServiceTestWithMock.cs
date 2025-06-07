@@ -13,8 +13,7 @@ using NSubstitute;
 namespace Car.Auction.Management.System;
 
 [TestFixture]
-public class AuctionServiceTestsWithMock
-{
+public class AuctionServiceTestsWithMock {
     private AuctionService _service;
     private IVehicleRepository _vehicleRepo;
     private IAuctionRepository _auctionRepo;
@@ -24,8 +23,7 @@ public class AuctionServiceTestsWithMock
     private ChannelWriter<AuctionMonitoringResponse> _channelWriter;
 
     [SetUp]
-    public void Setup()
-    {
+    public void Setup() {
         _vehicleRepo = Substitute.For<IVehicleRepository>();
         _auctionRepo = Substitute.For<IAuctionRepository>();
         _logger = Substitute.For<ILogger<AuctionService>>();
@@ -37,8 +35,7 @@ public class AuctionServiceTestsWithMock
     }
 
     [Test]
-    public async Task AddVehicle_ShouldAddSuccessfully()
-    {
+    public async Task AddVehicle_ShouldAddSuccessfully() {
         var vehicle = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Corolla", 2022, new Money(5000, CurrencyType.USD), 4);
 
         _vehicleRepo.Exists(vehicle.Id).Returns(false);
@@ -50,8 +47,7 @@ public class AuctionServiceTestsWithMock
     }
 
     [Test]
-    public async Task AddVehicle_DuplicateId_ReturnsError()
-    {
+    public async Task AddVehicle_DuplicateId_ReturnsError() {
         var id = new VehicleId(Guid.NewGuid());
         var vehicle2 = new Hatchback(id, "Honda", "Fit", 2023, new Money(3000, CurrencyType.USD), 5);
 
@@ -65,8 +61,7 @@ public class AuctionServiceTestsWithMock
     }
 
     [Test]
-    public async Task SearchVehicles_ByTypeAndManufacturer_ReturnsCorrectResults()
-    {
+    public async Task SearchVehicles_ByTypeAndManufacturer_ReturnsCorrectResults() {
         var v2 = new Hatchback(new VehicleId(Guid.NewGuid()), "Honda", "Fit", 2023, new Money(3000, CurrencyType.USD), 5);
 
         _vehicleRepo.Search("Hatchback", "Honda").Returns(new[] { v2 });
@@ -80,8 +75,7 @@ public class AuctionServiceTestsWithMock
     }
 
     [Test]
-    public async Task StartAuction_Success()
-    {
+    public async Task StartAuction_Success() {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
 
         _vehicleRepo.GetById(v.Id).Returns(v);
@@ -94,8 +88,7 @@ public class AuctionServiceTestsWithMock
     }
 
     [Test]
-    public async Task StartAuction_VehicleNotFound_ReturnsError()
-    {
+    public async Task StartAuction_VehicleNotFound_ReturnsError() {
         var vehicleId = new VehicleId(Guid.NewGuid());
 
         _vehicleRepo.GetById(vehicleId).Returns((Vehicle)null!);
@@ -108,8 +101,7 @@ public class AuctionServiceTestsWithMock
     }
 
     [Test]
-    public async Task StartAuction_AlreadyActive_ReturnsError()
-    {
+    public async Task StartAuction_AlreadyActive_ReturnsError() {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
 
         _vehicleRepo.GetById(v.Id).Returns(v);
@@ -123,8 +115,7 @@ public class AuctionServiceTestsWithMock
     }
 
     [Test]
-    public async Task PlaceBid_Success()
-    {
+    public async Task PlaceBid_Success() {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
         var auction = new Domain.Entities.Auction.Auction(v.Id);
 
@@ -140,8 +131,7 @@ public class AuctionServiceTestsWithMock
     }
 
     [Test]
-    public async Task PlaceBid_BelowCurrentHighest_ReturnsError()
-    {
+    public async Task PlaceBid_BelowCurrentHighest_ReturnsError() {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
         var auction = new Domain.Entities.Auction.Auction(v.Id);
         auction.PlaceBid(new Bid("Alice", new Money(5000, CurrencyType.USD)), v);
@@ -158,8 +148,7 @@ public class AuctionServiceTestsWithMock
     }
 
     [Test]
-    public async Task PlaceBid_NoActiveAuction_ReturnsError()
-    {
+    public async Task PlaceBid_NoActiveAuction_ReturnsError() {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
 
         _vehicleRepo.GetById(v.Id).Returns(v);
@@ -175,8 +164,7 @@ public class AuctionServiceTestsWithMock
     }
 
     [Test]
-    public async Task CloseAuction_Success()
-    {
+    public async Task CloseAuction_Success() {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
         var auction = new Domain.Entities.Auction.Auction(v.Id);
 
@@ -190,8 +178,7 @@ public class AuctionServiceTestsWithMock
     }
 
     [Test]
-    public async Task CloseAuction_NoActiveAuction_ReturnsError()
-    {
+    public async Task CloseAuction_NoActiveAuction_ReturnsError() {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
 
         _vehicleRepo.GetById(v.Id).Returns(v);

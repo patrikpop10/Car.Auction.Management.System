@@ -1,11 +1,6 @@
-﻿namespace Domain.Entities.Vehicles;
+namespace Domain.Entities.Vehicles;
 
-public class Hatchback : Vehicle
-{
-    public int NumberOfDoors { get; }
-    public Hatchback(VehicleId id, string manufacturer, string model, int year, Money startingBid, int numberOfDoors)
-        : base(id, manufacturer, model, year, startingBid)
-    {
-        NumberOfDoors = numberOfDoors;
-    }
+public class Hatchback(VehicleId id, string manufacturer, string model, int year, Money startingBid, int numberOfDoors)
+    : Vehicle(id, manufacturer, model, year, startingBid) {
+    public int NumberOfDoors { get; } = numberOfDoors;
 }

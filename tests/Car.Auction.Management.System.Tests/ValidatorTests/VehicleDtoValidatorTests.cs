@@ -1,24 +1,19 @@
 using Application.Models.Dtos;
 using Application.Validators.DtosValidators;
+
 using FluentValidation.TestHelper;
 
 namespace Car.Auction.Management.System.ValidatorTests;
 
-public class VehicleDtoValidatorTests
-{
+public class VehicleDtoValidatorTests {
     private VehicleDtoValidator _validator;
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _validator = new VehicleDtoValidator();
-    }
+    public void SetUp() => _validator = new VehicleDtoValidator();
 
     [Test]
-    public void Validate_WhenTypeIsEmpty_ReturnsValidationError()
-    {
-        var vehicle = new VehicleDto
-        {
+    public void Validate_WhenTypeIsEmpty_ReturnsValidationError() {
+        var vehicle = new VehicleDto {
             Type = string.Empty,
             Manufacturer = "Toyota",
             Model = "Corolla",
@@ -32,10 +27,8 @@ public class VehicleDtoValidatorTests
     }
 
     [Test]
-    public void Validate_WhenManufacturerIsEmpty_ReturnsValidationError()
-    {
-        var vehicle = new VehicleDto
-        {
+    public void Validate_WhenManufacturerIsEmpty_ReturnsValidationError() {
+        var vehicle = new VehicleDto {
             Type = "Car",
             Manufacturer = string.Empty,
             Model = "Corolla",
@@ -49,10 +42,8 @@ public class VehicleDtoValidatorTests
     }
 
     [Test]
-    public void Validate_WhenModelIsEmpty_ReturnsValidationError()
-    {
-        var vehicle = new VehicleDto
-        {
+    public void Validate_WhenModelIsEmpty_ReturnsValidationError() {
+        var vehicle = new VehicleDto {
             Type = "Car",
             Manufacturer = "Toyota",
             Model = string.Empty,
@@ -66,10 +57,8 @@ public class VehicleDtoValidatorTests
     }
 
     [Test]
-    public void Validate_WhenYearIsInvalid_ReturnsValidationError()
-    {
-        var vehicle = new VehicleDto
-        {
+    public void Validate_WhenYearIsInvalid_ReturnsValidationError() {
+        var vehicle = new VehicleDto {
             Type = "Car",
             Manufacturer = "Toyota",
             Model = "Corolla",
@@ -83,10 +72,8 @@ public class VehicleDtoValidatorTests
     }
 
     [Test]
-    public void Validate_WhenNumberOfDoorsIsNegative_ReturnsValidationError()
-    {
-        var vehicle = new VehicleDto
-        {
+    public void Validate_WhenNumberOfDoorsIsNegative_ReturnsValidationError() {
+        var vehicle = new VehicleDto {
             Type = "Car",
             Manufacturer = "Toyota",
             Model = "Corolla",
@@ -100,10 +87,8 @@ public class VehicleDtoValidatorTests
     }
 
     [Test]
-    public void Validate_WhenNumberOfSeatsIsNegative_ReturnsValidationError()
-    {
-        var vehicle = new VehicleDto
-        {
+    public void Validate_WhenNumberOfSeatsIsNegative_ReturnsValidationError() {
+        var vehicle = new VehicleDto {
             Type = "Car",
             Manufacturer = "Toyota",
             Model = "Corolla",
@@ -117,10 +102,8 @@ public class VehicleDtoValidatorTests
     }
 
     [Test]
-    public void Validate_WhenLoadCapacityIsNegative_ReturnsValidationError()
-    {
-        var vehicle = new VehicleDto
-        {
+    public void Validate_WhenLoadCapacityIsNegative_ReturnsValidationError() {
+        var vehicle = new VehicleDto {
             Type = "Truck",
             Manufacturer = "Ford",
             Model = "F-150",
@@ -134,10 +117,8 @@ public class VehicleDtoValidatorTests
     }
 
     [Test]
-    public void Validate_WhenVehicleDtoIsValid_ReturnsNoValidationErrors()
-    {
-        var vehicle = new VehicleDto
-        {
+    public void Validate_WhenVehicleDtoIsValid_ReturnsNoValidationErrors() {
+        var vehicle = new VehicleDto {
             Type = "Car",
             Manufacturer = "Toyota",
             Model = "Corolla",

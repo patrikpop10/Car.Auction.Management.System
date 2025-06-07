@@ -1,20 +1,16 @@
-﻿using Application.Extensions;
+using Application.Extensions;
 using Application.Interfaces;
 using Application.Models.Requests;
 using Domain.Entities.Vehicles;
 
 namespace Api.Endpoints;
 
-public static class VehiclesEndpoints
-{
-    public static RouteGroupBuilder MapVehiclesEndpoints(this WebApplication application)
-    {
+public static class VehiclesEndpoints {
+    public static RouteGroupBuilder MapVehiclesEndpoints(this WebApplication application) {
         var group = application.MapGroup("/vehicles").WithTags("Vehicles");
 
-        group.MapPost("/", async (IVehicleService service, VehicleRequest dto) =>
-        {
-            Vehicle vehicle = dto.Vehicle.Type switch
-            {
+        group.MapPost("/", async (IVehicleService service, VehicleRequest dto) => {
+            Vehicle vehicle = dto.Vehicle.Type switch {
                 "Hatchback" => new Hatchback(new VehicleId(dto.Id), dto.Vehicle.Manufacturer, dto.Vehicle.Model, dto.Vehicle.Year, dto.StartingBid.ToDomain(), dto.Vehicle.NumberOfDoors ?? 5),
                 "Sedan" => new Sedan(new VehicleId(dto.Id), dto.Vehicle.Manufacturer, dto.Vehicle.Model, dto.Vehicle.Year, dto.StartingBid.ToDomain(), dto.Vehicle.NumberOfDoors ?? 4),
                 "SUV" => new SUV(new VehicleId(dto.Id), dto.Vehicle.Manufacturer, dto.Vehicle.Model, dto.Vehicle.Year, dto.StartingBid.ToDomain(), dto.Vehicle.NumberOfSeats ?? 5),
@@ -26,8 +22,7 @@ public static class VehiclesEndpoints
             return addVehicleResult.ToApiResult(Results.Created($"/vehicles/{vehicle.Id}", dto));
         });
 
-        group.MapGet("/search", async (IVehicleService service, string? type, string? manufacturer, string? model, int? year) =>
-        {
+        group.MapGet("/search", async (IVehicleService service, string? type, string? manufacturer, string? model, int? year) => {
             var results = await service.SearchVehicles(type, manufacturer, model, year);
             return Results.Ok(results);
         });

@@ -1,29 +1,23 @@
 using Application.Models.Dtos;
 using Application.Models.Requests;
 using Application.Validators.RequestValidators;
+
 using FluentValidation.TestHelper;
 
 namespace Car.Auction.Management.System.ValidatorTests;
 
-public class VehicleRequestValidatorTests
-{
+public class VehicleRequestValidatorTests {
     private VehicleRequestValidator _validator;
 
     [OneTimeSetUp]
-    public void SetUp()
-    {
-        _validator = new VehicleRequestValidator();
-    }
+    public void SetUp() => _validator = new VehicleRequestValidator();
 
     [Test]
-    public void Validate_WhenIdIsEmpty_ReturnsValidationError()
-    {
-        var request = new VehicleRequest
-        {
+    public void Validate_WhenIdIsEmpty_ReturnsValidationError() {
+        var request = new VehicleRequest {
             Id = Guid.Empty,
-            StartingBid = new() { Amount = 100, Currency = "USD" },
-            Vehicle = new VehicleDto
-            {
+            StartingBid = new MoneyDto { Amount = 100, Currency = "USD" },
+            Vehicle = new VehicleDto {
                 Type = "Car",
                 Manufacturer = "Toyota",
                 Model = "Corolla",
@@ -38,14 +32,11 @@ public class VehicleRequestValidatorTests
     }
 
     [Test]
-    public void Validate_WhenStartingBidIsNull_ReturnsValidationError()
-    {
-        var request = new VehicleRequest
-        {
+    public void Validate_WhenStartingBidIsNull_ReturnsValidationError() {
+        var request = new VehicleRequest {
             Id = Guid.NewGuid(),
-            StartingBid = null,
-            Vehicle = new VehicleDto
-            {
+            StartingBid = null!,
+            Vehicle = new VehicleDto {
                 Type = "Car",
                 Manufacturer = "Toyota",
                 Model = "Corolla",
@@ -60,14 +51,11 @@ public class VehicleRequestValidatorTests
     }
 
     [Test]
-    public void Validate_WhenVehicleRequestIsValid_ReturnsNoValidationErrors()
-    {
-        var request = new VehicleRequest
-        {
+    public void Validate_WhenVehicleRequestIsValid_ReturnsNoValidationErrors() {
+        var request = new VehicleRequest {
             Id = Guid.NewGuid(),
             StartingBid = new MoneyDto { Amount = 100, Currency = "USD" },
-            Vehicle = new VehicleDto
-            {
+            Vehicle = new VehicleDto {
                 Type = "Car",
                 Manufacturer = "Toyota",
                 Model = "Corolla",

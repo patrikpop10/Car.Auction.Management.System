@@ -1,9 +1,8 @@
-﻿using Domain.Common;
+using Domain.Common;
 
 namespace Api;
 
-public static class ResultExtensions
-{
+public static class ResultExtensions {
     public static IResult ToApiResult(this Result result, IResult resultResponseIfSuccess)
         => result.IsSuccess
             ? resultResponseIfSuccess

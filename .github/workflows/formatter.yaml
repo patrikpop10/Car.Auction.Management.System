@@ -1,0 +1,24 @@
+name: Linter
+on:
+  pull_request:
+    paths:
+      - '**/*.cs'
+      - '.editorconfig'
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  check-format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Run formatter
+        run: dotnet format --no-restore --verify-no-changes Car.Auction.Management.sln
