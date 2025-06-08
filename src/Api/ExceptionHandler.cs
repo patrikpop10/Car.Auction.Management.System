@@ -13,7 +13,7 @@ public class ExceptionHandler : IExceptionHandler {
     public ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken) {
 
         // Log the exception (you can use any logging framework)
-        Console.WriteLine($"Exception occurred: {exception.Message}");
+        _logger.LogError(exception,"Exception occurred: {Message}", exception.Message);
 
         // Set the response status code and content
         httpContext.Response.StatusCode = 500; // Internal Server Error
