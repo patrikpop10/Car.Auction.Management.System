@@ -1,6 +1,6 @@
 using Domain.Common;
 using Domain.Entities;
-using Domain.Entities.Auction;
+using Domain.Entities.Auctions;
 using Domain.Entities.Vehicles;
 using FluentAssertions;
 
@@ -15,7 +15,7 @@ public class AuctionTests {
         var vehicleId = new VehicleId(Guid.NewGuid());
 
         // Act
-        var auction = new Domain.Entities.Auction.Auction(vehicleId);
+        var auction = new Domain.Entities.Auctions.Auction(vehicleId);
 
         // Assert
         auction.Should().NotBeNull();
@@ -26,7 +26,7 @@ public class AuctionTests {
     [Test]
     public void AuctionPlaceBid_WhenVehicleIdMismatch_ShouldReturnFailure() {
         // Arrange
-        var auction = new Domain.Entities.Auction.Auction(new VehicleId(Guid.NewGuid()));
+        var auction = new Domain.Entities.Auctions.Auction(new VehicleId(Guid.NewGuid()));
         var vehicle = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2020, new Money(15000, CurrencyType.USD), 5);
         var bid = new Bid("bidder1", new Money(20000, CurrencyType.USD));
 
@@ -44,7 +44,7 @@ public class AuctionTests {
     [Test]
     public void AuctionPlaceBid_WhenBidIsValid_ShouldAddBidAndReturnSuccess() {
         // Arrange
-        var auction = new Domain.Entities.Auction.Auction(new VehicleId(Guid.NewGuid()));
+        var auction = new Domain.Entities.Auctions.Auction(new VehicleId(Guid.NewGuid()));
         var vehicle = new Sedan(auction.VehicleId, "Toyota", "Camry", 2020, new Money(15000, CurrencyType.USD), 5);
         var bid = new Bid("bidder1", new Money(20000, CurrencyType.USD));
 
@@ -62,7 +62,7 @@ public class AuctionTests {
     public void AuctionCloseAuction_WhenAuctionIsAlreadyClosed_ShouldReturnError() {
         // Arrange
 
-        var auction = new Domain.Entities.Auction.Auction(new VehicleId(Guid.NewGuid()));
+        var auction = new Domain.Entities.Auctions.Auction(new VehicleId(Guid.NewGuid()));
         auction.Close(); // Close the auction to set it to inactive
 
         // Act

@@ -49,7 +49,7 @@ public class VehicleService : IVehicleService {
         var activeVehicles = new List<SearchVehicleResponse>();
 
         foreach (var v in vehicleDtosResult.Value!.Select(x => x.DomainToResponse())) {
-            if (await IsAuctionActive(new VehicleId(v.Id)))
+            if (await IsAuctionActive(new VehicleId(v.Vehicle.Id)))
                 activeVehicles.Add(v);
         }
         return activeVehicles;

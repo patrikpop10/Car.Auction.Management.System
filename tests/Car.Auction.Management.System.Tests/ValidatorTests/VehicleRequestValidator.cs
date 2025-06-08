@@ -15,9 +15,9 @@ public class VehicleRequestValidatorTests {
     [Test]
     public void Validate_WhenIdIsEmpty_ReturnsValidationError() {
         var request = new VehicleRequest {
-            Id = Guid.Empty,
             StartingBid = new MoneyDto { Amount = 100, Currency = "USD" },
             Vehicle = new VehicleDto {
+                Id = Guid.Empty,
                 Type = "Car",
                 Manufacturer = "Toyota",
                 Model = "Corolla",
@@ -28,15 +28,15 @@ public class VehicleRequestValidatorTests {
             }
         };
         var result = _validator.TestValidate(request);
-        result.ShouldHaveValidationErrorFor(x => x.Id);
+        result.ShouldHaveValidationErrorFor(x => x.Vehicle.Id);
     }
 
     [Test]
     public void Validate_WhenStartingBidIsNull_ReturnsValidationError() {
         var request = new VehicleRequest {
-            Id = Guid.NewGuid(),
             StartingBid = null!,
             Vehicle = new VehicleDto {
+                Id = Guid.NewGuid(),
                 Type = "Car",
                 Manufacturer = "Toyota",
                 Model = "Corolla",
@@ -53,9 +53,9 @@ public class VehicleRequestValidatorTests {
     [Test]
     public void Validate_WhenVehicleRequestIsValid_ReturnsNoValidationErrors() {
         var request = new VehicleRequest {
-            Id = Guid.NewGuid(),
             StartingBid = new MoneyDto { Amount = 100, Currency = "USD" },
             Vehicle = new VehicleDto {
+                Id = Guid.NewGuid(),
                 Type = "Sedan",
                 Manufacturer = "Toyota",
                 Model = "Corolla",

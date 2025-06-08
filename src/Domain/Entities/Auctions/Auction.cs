@@ -2,7 +2,7 @@ using Domain.Common;
 using Domain.Entities.Vehicles;
 using Domain.Events;
 
-namespace Domain.Entities.Auction;
+namespace Domain.Entities.Auctions;
 
 public class Auction {
     public AuctionId Id { get; }

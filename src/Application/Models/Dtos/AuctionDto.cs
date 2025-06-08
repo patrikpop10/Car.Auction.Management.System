@@ -1,5 +1,5 @@
-using Domain.Entities.Auction;
+using Domain.Entities.Auctions;
 
 namespace Application.Models.Dtos;
 
-public record AuctionDto(AuctionId Id, Guid VehicleId, DateTime StartTime, DateTime? EndTime, bool IsActive);
+public record AuctionDto(Guid Id, DateTime StartTime, DateTime? EndTime, bool IsActive);

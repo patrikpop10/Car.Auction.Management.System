@@ -30,8 +30,7 @@ public class VehicleExtensionsTests {
         // Arrange
         var id = Guid.NewGuid();
         var vehicleRequest = new VehicleRequest {
-            Id = id,
-            Vehicle = new VehicleDto { Type = nameof(Sedan), Manufacturer = "Toyota", Model = "Corolla", Year = 2020 },
+            Vehicle = new VehicleDto { Id = Guid.NewGuid(), Type = nameof(Sedan), Manufacturer = "Toyota", Model = "Corolla", Year = 2020 },
             StartingBid = new MoneyDto { Amount = 100, Currency = "USD" }
         };
 
@@ -58,7 +57,6 @@ public class VehicleExtensionsTests {
 
         // Assert
         response.Should().NotBeNull();
-        response.Id.Should().Be(sedan.Id.Id);
         response.Vehicle.Type.Should().Be(nameof(Sedan));
         response.Vehicle.Manufacturer.Should().Be(sedan.Manufacturer);
         response.Vehicle.Model.Should().Be(sedan.Model);

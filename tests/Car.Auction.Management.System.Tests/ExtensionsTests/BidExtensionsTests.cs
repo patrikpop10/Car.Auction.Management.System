@@ -2,7 +2,7 @@ using Application.Extensions;
 using Application.Models.Dtos;
 using Application.Models.Requests;
 using Domain.Entities;
-using Domain.Entities.Auction;
+using Domain.Entities.Auctions;
 using FluentAssertions;
 
 namespace Car.Auction.Management.System.ExtensionsTests;

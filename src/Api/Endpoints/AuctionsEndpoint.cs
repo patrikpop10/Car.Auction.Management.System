@@ -34,7 +34,7 @@ public static class AuctionsEndpoints {
         group.MapGet("/active/{vehicleId:guid}", (IAuctionMonitor monitor, Guid vehicleId, CancellationToken cancellationToken) => {
             async IAsyncEnumerable<SseItem<AuctionMonitoringResponse>> GetActiveAuctions() {
                 await foreach (var auction in monitor.GetActiveAuctionsAsync(cancellationToken)) {
-                    if (auction.Auction.VehicleId == vehicleId) {
+                    if (auction.Vehicle.Id == vehicleId) {
                         yield return new SseItem<AuctionMonitoringResponse>(auction) {
                             ReconnectionInterval = TimeSpan.FromMinutes(1)
                         };

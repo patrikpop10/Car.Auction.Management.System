@@ -1,7 +1,7 @@
 using Application.Models.Dtos;
 using Application.Models.Responses;
 using Domain.Entities;
-using Domain.Entities.Auction;
+using Domain.Entities.Auctions;
 using Domain.Entities.Vehicles;
 using Domain.Events;
 
@@ -12,7 +12,7 @@ public static class AuctionExtensions {
         => new StartAuctionResponse(
             vehicle.StartingBid.ToDto(),
             auction.StartedAt,
-            auction.VehicleId.Id,
+            auction.Id.Id,
             vehicle.ToDto());
 
 
@@ -29,8 +29,7 @@ public static class AuctionExtensions {
         auction.ToDto());
 
     private static AuctionDto ToDto(this Auction auction) => new AuctionDto(
-        auction.Id,
-        auction.VehicleId.Id,
+        auction.Id.Id,
         auction.StartedAt,
         auction.ClosedAt,
         auction.IsActive);
