@@ -5,7 +5,7 @@ using Application.Models.Requests;
 using Application.Models.Responses;
 using Domain.Common;
 using Domain.Entities;
-using Domain.Entities.Auction;
+using Domain.Entities.Auctions;
 using Domain.Entities.Vehicles;
 using Domain.Repositories;
 using Microsoft.Extensions.Logging;

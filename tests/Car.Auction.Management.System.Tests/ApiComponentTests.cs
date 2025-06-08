@@ -29,9 +29,9 @@ public class ApiComponentTests {
 
     [Test]
     public async Task CanAddAndSearchVehicle() {
-        var vehicle = new SearchVehicleResponse() {
-            Id = Guid.NewGuid(),
+        var vehicle = new VehicleRequest {
             Vehicle = new VehicleDto {
+                Id = Guid.NewGuid(),
                 Type = "Sedan",
                 Manufacturer = "Toyota",
                 Model = "Camry",
@@ -48,7 +48,7 @@ public class ApiComponentTests {
         resp.StatusCode.Should().Be(HttpStatusCode.Created);
 
         //starting a new auction
-        var startAuctionResponse = await _client.PostAsync($"/auctions/start/{vehicle.Id}", null);
+        var startAuctionResponse = await _client.PostAsync($"/auctions/start/{vehicle.Vehicle.Id}", null);
         startAuctionResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Search by type
@@ -60,9 +60,9 @@ public class ApiComponentTests {
     [Test]
     public async Task AddingVehicleWithDuplicateIdReturnsError() {
         var id = Guid.NewGuid();
-        var vehicle1 = new SearchVehicleResponse {
-            Id = id,
+        var vehicle1 = new VehicleRequest {
             Vehicle = new VehicleDto {
+                Id = id,
                 Type = "Sedan",
                 Manufacturer = "Honda",
                 Model = "Accord",
@@ -74,9 +74,9 @@ public class ApiComponentTests {
                 Currency = "USD"
             },
         };
-        var vehicle2 = new SearchVehicleResponse {
-            Id = id,
+        var vehicle2 = new VehicleRequest {
             Vehicle = new VehicleDto {
+                Id = id,
                 Type = "Hatchback",
                 Manufacturer = "Toyota",
                 Model = "Yaris",
@@ -96,9 +96,9 @@ public class ApiComponentTests {
 
     [Test]
     public async Task CanStartAndCloseAuction() {
-        var vehicle = new SearchVehicleResponse {
-            Id = Guid.NewGuid(),
+        var vehicle = new VehicleRequest {
             Vehicle = new VehicleDto {
+                Id = Guid.NewGuid(),
                 Type = "Truck",
                 Manufacturer = "Ford",
                 Model = "F-150",
@@ -115,10 +115,10 @@ public class ApiComponentTests {
 
         var addVehicleResponse = await _client.PostAsync("/vehicles", AsJson(vehicle));
         addVehicleResponse.StatusCode.Should().Be(HttpStatusCode.Created);
-        var startAuctionResponse = await _client.PostAsync($"/auctions/start/{vehicle.Id}", null);
+        var startAuctionResponse = await _client.PostAsync($"/auctions/start/{vehicle.Vehicle.Id}", null);
         startAuctionResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var closeAuctionResponse = await _client.PostAsync($"/auctions/close/{vehicle.Id}", null);
+        var closeAuctionResponse = await _client.PostAsync($"/auctions/close/{vehicle.Vehicle.Id}", null);
         closeAuctionResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -131,9 +131,9 @@ public class ApiComponentTests {
     [Test]
     public async Task StartingAuctionWhenAlreadyActiveReturnsError() {
         // Arrange
-        var vehicle = new SearchVehicleResponse {
-            Id = Guid.NewGuid(),
+        var vehicle = new VehicleRequest {
             Vehicle = new VehicleDto {
+                Id = Guid.NewGuid(),
                 Type = "SUV",
                 Manufacturer = "Nissan",
                 Model = "Rogue",
@@ -147,8 +147,8 @@ public class ApiComponentTests {
         };
         // Act
         var createVehicleResponse = await _client.PostAsync("/vehicles", AsJson(vehicle));
-        var startAuctionResponse = await _client.PostAsync($"/auctions/start/{vehicle.Id}", null);
-        var startAuction2Response = await _client.PostAsync($"/auctions/start/{vehicle.Id}", null);
+        var startAuctionResponse = await _client.PostAsync($"/auctions/start/{vehicle.Vehicle.Id}", null);
+        var startAuction2Response = await _client.PostAsync($"/auctions/start/{vehicle.Vehicle.Id}", null);
 
         // Assert
         createVehicleResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -158,9 +158,9 @@ public class ApiComponentTests {
 
     [Test]
     public async Task CanPlaceBidAndEnforceBidRules() {
-        var vehicle = new SearchVehicleResponse {
-            Id = Guid.NewGuid(),
+        var vehicle = new VehicleRequest {
             Vehicle = new VehicleDto {
+                Id = Guid.NewGuid(),
                 Type = "Sedan",
                 Manufacturer = "Honda",
                 Model = "Accord",
@@ -174,20 +174,20 @@ public class ApiComponentTests {
         };
 
         await _client.PostAsync("/vehicles", AsJson(vehicle));
-        await _client.PostAsync($"/auctions/start/{vehicle.Id}", null);
+        await _client.PostAsync($"/auctions/start/{vehicle.Vehicle.Id}", null);
 
         var bid1 = new BidRequest("Alice", new MoneyDto {
             Amount = 21000,
             Currency = "USD"
         });
-        var bidResp1 = await _client.PostAsync($"/auctions/bid/{vehicle.Id}", AsJson(bid1));
+        var bidResp1 = await _client.PostAsync($"/auctions/bid/{vehicle.Vehicle.Id}", AsJson(bid1));
         bidResp1.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var bid2 = new BidRequest("Bob", new MoneyDto {
             Amount = 22000,
             Currency = "USD"
         });
-        var bidResponse = await _client.PostAsync($"/auctions/bid/{vehicle.Id}", AsJson(bid2));
+        var bidResponse = await _client.PostAsync($"/auctions/bid/{vehicle.Vehicle.Id}", AsJson(bid2));
         bidResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Try lower bid
@@ -195,15 +195,15 @@ public class ApiComponentTests {
             Amount = 21500,
             Currency = "USD"
         });
-        var badBidResponse = await _client.PostAsync($"/auctions/bid/{vehicle.Id}", AsJson(badBid));
+        var badBidResponse = await _client.PostAsync($"/auctions/bid/{vehicle.Vehicle.Id}", AsJson(badBid));
         badBidResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Test]
     public async Task PlacingBidWithoutActiveAuctionReturnsError() {
         var vehicle = new SearchVehicleResponse {
-            Id = Guid.NewGuid(),
             Vehicle = new VehicleDto {
+                Id = Guid.NewGuid(),
                 Type = "Hatchback",
                 Manufacturer = "Mazda",
                 Model = "3",
@@ -220,15 +220,15 @@ public class ApiComponentTests {
             Amount = 8100,
             Currency = "USD"
         });
-        var resp = await _client.PostAsync($"/auctions/bid/{vehicle.Id}", AsJson(bid));
+        var resp = await _client.PostAsync($"/auctions/bid/{vehicle.Vehicle.Id}", AsJson(bid));
         resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Test]
     public async Task ClosingAuctionThatIsNotActiveReturnsError() {
         var vehicle = new SearchVehicleResponse {
-            Id = Guid.NewGuid(),
             Vehicle = new VehicleDto {
+                Id = Guid.NewGuid(),
                 Type = "SUV",
                 Manufacturer = "Ford",
                 Model = "Explorer",
@@ -243,7 +243,7 @@ public class ApiComponentTests {
         };
 
         await _client.PostAsync("/vehicles", AsJson(vehicle));
-        var resp = await _client.PostAsync($"/auctions/close/{vehicle.Id}", null);
+        var resp = await _client.PostAsync($"/auctions/close/{vehicle.Vehicle.Id}", null);
         resp.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
@@ -263,9 +263,9 @@ public class ApiComponentTests {
 
     [Test]
     public async Task CloseAuctionRemovesVehicleFromRepository() {
-        var vehicle = new SearchVehicleResponse() {
-            Id = Guid.NewGuid(),
-            Vehicle = new VehicleDto() {
+        var vehicle = new VehicleRequest {
+            Vehicle = new VehicleDto {
+                Id = Guid.NewGuid(),
                 Type = "Truck",
                 Manufacturer = "Chevrolet",
                 Model = "Silverado",
@@ -279,13 +279,13 @@ public class ApiComponentTests {
         };
 
         await _client.PostAsync("/vehicles", AsJson(vehicle));
-        await _client.PostAsync($"/auctions/start/{vehicle.Id}", null);
+        await _client.PostAsync($"/auctions/start/{vehicle.Vehicle.Id}", null);
 
-        var closeAuctionResponse = await _client.PostAsync($"/auctions/close/{vehicle.Id}", null);
+        var closeAuctionResponse = await _client.PostAsync($"/auctions/close/{vehicle.Vehicle.Id}", null);
         closeAuctionResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         // Verify vehicle is removed
-        var getVehicleResponse = await _client.GetAsync($"/vehicles/{vehicle.Id}");
+        var getVehicleResponse = await _client.GetAsync($"/vehicles/{vehicle.Vehicle.Id}");
         getVehicleResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 }

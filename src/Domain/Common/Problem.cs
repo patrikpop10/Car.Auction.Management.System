@@ -1,4 +1,4 @@
-using Domain.Entities.Auction;
+using Domain.Entities.Auctions;
 using Domain.Entities.Vehicles;
 
 namespace Domain.Common;

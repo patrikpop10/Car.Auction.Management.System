@@ -5,7 +5,7 @@ using Application.Models.Responses;
 using Application.Services;
 using Domain.Common;
 using Domain.Entities;
-using Domain.Entities.Auction;
+using Domain.Entities.Auctions;
 using Domain.Entities.Vehicles;
 using Domain.Repositories;
 using Microsoft.Extensions.Logging;
@@ -81,11 +81,11 @@ public class AuctionServiceTestsWithMock {
 
         _vehicleRepo.GetById(v.Id).Returns(Result<Vehicle>.Success(v));
         _auctionRepo.IsAuctionForVehicleActive(v.Id).Returns(Result<bool>.Success(false));
-        _auctionRepo.Add(Arg.Any<Domain.Entities.Auction.Auction>()).Returns(Result.Success());
+        _auctionRepo.Add(Arg.Any<Domain.Entities.Auctions.Auction>()).Returns(Result.Success());
         var result = await _service.StartAuction(v.Id);
 
         Assert.That(result.IsSuccess, Is.True);
-        await _auctionRepo.Received(1).Add(Arg.Is<Domain.Entities.Auction.Auction>(a => a.VehicleId == v.Id));
+        await _auctionRepo.Received(1).Add(Arg.Is<Domain.Entities.Auctions.Auction>(a => a.VehicleId == v.Id));
     }
 
     [Test]
@@ -118,10 +118,10 @@ public class AuctionServiceTestsWithMock {
     [Test]
     public async Task PlaceBid_Success() {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
-        var auction = new Domain.Entities.Auction.Auction(v.Id);
+        var auction = new Domain.Entities.Auctions.Auction(v.Id);
 
         _vehicleRepo.GetById(v.Id).Returns(Result<Vehicle>.Success(v));
-        _auctionRepo.GetActiveByVehicleId(v.Id).Returns(Result<Domain.Entities.Auction.Auction>.Success(auction));
+        _auctionRepo.GetActiveByVehicleId(v.Id).Returns(Result<Domain.Entities.Auctions.Auction>.Success(auction));
 
         var bidDto1 = new BidRequest("Alice", new MoneyDto { Amount = 5000, Currency = "USD" });
         var result = await _service.PlaceBid(bidDto1, v.Id);
@@ -134,11 +134,11 @@ public class AuctionServiceTestsWithMock {
     [Test]
     public async Task PlaceBid_BelowCurrentHighest_ReturnsError() {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
-        var auction = new Domain.Entities.Auction.Auction(v.Id);
+        var auction = new Domain.Entities.Auctions.Auction(v.Id);
         auction.PlaceBid(new Bid("Alice", new Money(5000, CurrencyType.USD)), v);
 
         _vehicleRepo.GetById(v.Id).Returns(Result<Vehicle>.Success(v));
-        _auctionRepo.GetActiveByVehicleId(v.Id).Returns(Result<Domain.Entities.Auction.Auction>.Success(auction));
+        _auctionRepo.GetActiveByVehicleId(v.Id).Returns(Result<Domain.Entities.Auctions.Auction>.Success(auction));
 
         var bidDto2 = new BidRequest("Bob", new MoneyDto { Amount = 5000, Currency = "USD" });
         var result = await _service.PlaceBid(bidDto2, v.Id);
@@ -153,7 +153,7 @@ public class AuctionServiceTestsWithMock {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
 
         _vehicleRepo.GetById(v.Id).Returns(Result<Vehicle>.Success(v));
-        _auctionRepo.GetActiveByVehicleId(v.Id).Returns(Result<Domain.Entities.Auction.Auction>.Failure(Problem.AuctionForVehicleNotActive(v.Id)));
+        _auctionRepo.GetActiveByVehicleId(v.Id).Returns(Result<Domain.Entities.Auctions.Auction>.Failure(Problem.AuctionForVehicleNotActive(v.Id)));
 
         var bid = new BidRequest("Bob", new MoneyDto { Amount = 5000, Currency = "USD" });
 
@@ -167,10 +167,10 @@ public class AuctionServiceTestsWithMock {
     [Test]
     public async Task CloseAuction_Success() {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
-        var auction = new Domain.Entities.Auction.Auction(v.Id);
+        var auction = new Domain.Entities.Auctions.Auction(v.Id);
 
         _vehicleRepo.GetById(v.Id).Returns(Result<Vehicle>.Success(v));
-        _auctionRepo.GetActiveByVehicleId(v.Id).Returns(Result<Domain.Entities.Auction.Auction>.Success(auction));
+        _auctionRepo.GetActiveByVehicleId(v.Id).Returns(Result<Domain.Entities.Auctions.Auction>.Success(auction));
 
         var result = await _service.CloseAuction(v.Id);
 
@@ -183,7 +183,7 @@ public class AuctionServiceTestsWithMock {
         var v = new Sedan(new VehicleId(Guid.NewGuid()), "Toyota", "Camry", 2022, new Money(5000, CurrencyType.USD), 4);
 
         _vehicleRepo.GetById(v.Id).Returns(Result<Vehicle>.Success(v));
-        _auctionRepo.GetActiveByVehicleId(v.Id).Returns(Result<Domain.Entities.Auction.Auction>.Failure(Problem.AuctionForVehicleNotActive(v.Id)));
+        _auctionRepo.GetActiveByVehicleId(v.Id).Returns(Result<Domain.Entities.Auctions.Auction>.Failure(Problem.AuctionForVehicleNotActive(v.Id)));
 
         var result = await _service.CloseAuction(v.Id);
 

@@ -13,6 +13,11 @@ public class VehicleDtoValidator : AbstractValidator<VehicleDto> {
     ];
 
     public VehicleDtoValidator() {
+
+        RuleFor(vehicle => vehicle.Id)
+            .NotEmpty()
+            .WithMessage("Vehicle ID is required.");
+
         RuleFor(vehicle => vehicle.Type)
             .NotEmpty()
             .WithMessage("Vehicle type is required.");
@@ -29,12 +34,14 @@ public class VehicleDtoValidator : AbstractValidator<VehicleDto> {
             .InclusiveBetween(1886, DateTime.Now.Year).WithMessage("Year must be between 1886 and the current year.");
 
         RuleFor(vehicle => vehicle.NumberOfDoors)
-            .GreaterThanOrEqualTo(0)
-            .WithMessage("Number of doors must be zero or greater.")
+            .GreaterThan(0)
+            .LessThanOrEqualTo(100)
+            .WithMessage("Number of doors must be greater than 0 and less than 100.")
             .When(vehicle => vehicle.NumberOfDoors.HasValue);
 
         RuleFor(vehicle => vehicle.NumberOfSeats)
             .GreaterThanOrEqualTo(0)
+            .LessThanOrEqualTo(100)
             .WithMessage("Number of seats must be zero or greater.")
             .When(vehicle => vehicle.NumberOfSeats.HasValue);
 

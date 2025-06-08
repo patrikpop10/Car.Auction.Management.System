@@ -3,7 +3,6 @@ using Application.Models.Dtos;
 using Application.Models.Requests;
 using Application.Models.Responses;
 using Application.Services;
-using Domain.Common;
 using Domain.Entities;
 using Domain.Entities.Vehicles;
 using Infra.Repositories;

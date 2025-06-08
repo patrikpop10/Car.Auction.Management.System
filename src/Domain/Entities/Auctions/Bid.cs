@@ -1,4 +1,4 @@
-namespace Domain.Entities.Auction;
+namespace Domain.Entities.Auctions;
 
 public sealed class Bid(string bidder, Money value) {
     public string Bidder { get; } = bidder;

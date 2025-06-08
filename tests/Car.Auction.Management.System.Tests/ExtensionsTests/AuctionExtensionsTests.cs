@@ -11,7 +11,7 @@ public class AuctionExtensionsTests {
     public void ToStartAuctionResponse_WhenAuctionAndVehicleAreProvided_ReturnsCorrectResponse() {
         // Arrange
         var id = new VehicleId(Guid.NewGuid());
-        var auction = new Domain.Entities.Auction.Auction(id);
+        var auction = new Domain.Entities.Auctions.Auction(id);
         var vehicle = new Sedan(id, "Toyota", "Camry", 2020, new Money(15000, CurrencyType.USD), 5);
 
         // Act
@@ -25,7 +25,7 @@ public class AuctionExtensionsTests {
         response.Vehicle.Year.Should().Be(vehicle.Year);
         response.StartingBid.Amount.Should().Be(vehicle.StartingBid.Amount);
         response.StartingBid.Currency.Should().Be(vehicle.StartingBid.CurrencyType.ToString());
-        response.AuctionId.Should().Be(id.Id);
+        response.AuctionId.Should().Be(auction.Id.Id);
         response.StartTime.Should().Be(auction.StartedAt);
         response.AuctionId.Should().NotBeEmpty();
 
@@ -35,7 +35,7 @@ public class AuctionExtensionsTests {
     public void Close_WhenAuctionAndWinningBidAreProvided_ReturnsCorrectAuctionClosed() {
         // Arrange
         var id = new VehicleId(Guid.NewGuid());
-        var auction = new Domain.Entities.Auction.Auction(id);
+        var auction = new Domain.Entities.Auctions.Auction(id);
         var winningBid = new Money(200, CurrencyType.USD);
 
         // Act

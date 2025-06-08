@@ -1,6 +1,6 @@
 using Application.Models.Dtos;
 using Application.Models.Requests;
-using Domain.Entities.Auction;
+using Domain.Entities.Auctions;
 
 namespace Application.Extensions;
 
