@@ -117,17 +117,11 @@ docker build -t car-auction-management .
 
 To start the application and bind the API to port 5000 (adjust as needed):
 ```bash
-docker run -p 5000:80 car-auction-management
+docker run -p 8080:80 car-auction-management
 ```
 
-- This maps port 80 inside the container to port 5000 on your host.
-- The API will be available at `http://localhost:5000/`.
-
-### 3. (Optional) Build and Run in One Command
-
-```bash
-docker build -t car-auction-management . && docker run -p 5000:80 car-auction-management
-```
+- This maps port 80 inside the container to port 8080 on your host.
+- The API will be available at `http://localhost:8080/`.
 
 ---
 
