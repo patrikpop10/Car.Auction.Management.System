@@ -1,3 +1,4 @@
+using Api;
 using Api.Endpoints;
 using Application;
 using Infra;
@@ -9,7 +10,8 @@ builder.Services.AddLogging();
 builder.Services
     .AddApplicationServices()
     .AddValidators()
-    .AddInfraServices();
+    .AddInfraServices()
+    .AddExceptionHandler<ExceptionHandler>();
 
 var app = builder.Build();
 
