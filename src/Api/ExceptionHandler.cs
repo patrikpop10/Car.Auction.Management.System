@@ -5,15 +5,15 @@ namespace Api;
 
 public class ExceptionHandler : IExceptionHandler {
     private readonly ILogger<ExceptionHandler> _logger;
-     public ExceptionHandler(ILogger<ExceptionHandler> logger) {
+    public ExceptionHandler(ILogger<ExceptionHandler> logger) {
         // You can use the logger if needed
-         _logger = logger;
+        _logger = logger;
 
     }
     public ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken) {
 
         // Log the exception (you can use any logging framework)
-        _logger.LogError(exception,"Exception occurred: {Message}", exception.Message);
+        _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
 
         // Set the response status code and content
         httpContext.Response.StatusCode = 500; // Internal Server Error
@@ -21,8 +21,7 @@ public class ExceptionHandler : IExceptionHandler {
 
         // Optionally, you can write a more detailed error response
         // use problem details
-        var problemDetails = new ProblemDetails
-        {
+        var problemDetails = new ProblemDetails {
             Title = "An error occurred",
             Status = 500,
             Detail = exception.Message,
