@@ -115,7 +115,7 @@ docker build -t car-auction-management .
 
 ### 2. Run the Docker Container
 
-To start the application and bind the API to port 5000 (adjust as needed):
+To start the application and bind the API to port 8080 (adjust as needed):
 ```bash
 docker run -p 8080:80 car-auction-management
 ```
@@ -133,9 +133,11 @@ docker run -p 8080:80 car-auction-management
 - **Error Handling:** All errors are expected to be communicated via the `Problem` object in the `Result`, not through exceptions.
 - **Validation:** It is assumed that all API input is validated at the API layer before reaching the application/domain logic.
 - **Concurrency:** The in-memory repositories do not handle concurrent access or race conditions.
+- **Logging:** No Privacy/Compliance concerns were taken into account when logging.
+- **Error Handling:** No major concerns for error handling due to lack of connection to other dependencies such as Databases or other services. 
 
 ---
 
 ## Summary
 
-The project is designed with clean architecture principles, separating concerns between API, application, infrastructure, and domain. The use of `Task<Result>` in repositories and services enables asynchronous, robust, and explicit error handling throughout the stack. The Result pattern specifically supports the Liskov Substitution Principle by ensuring all implementations follow a uniform and predictable contract, making the system easy to extend, test, and maintain.
+The project is designed with clean architecture principles, separating concerns between API, application, infrastructure, and domain. The use of `Task<Result>` in repositories and services enables asynchronous, robust, and explicit error handling throughout the stack. The Result pattern specifically supports the Liskov Substitution Principle by ensuring all implementations of the  follow a uniform and predictable contract, making the system easy to extend, test, and maintain.
